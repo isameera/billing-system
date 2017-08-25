@@ -1,0 +1,299 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+
+            .hide-button{
+                display: none;
+            }
+
+            .layout-compact .ui-datatable tbody tr.ui-widget-content td {
+                padding: 3px 10px !important;
+            }
+
+            .ui-datatable thead tr th {
+                /*border: none !important;*/
+                font-size: 12px !important;
+            }
+            .ui-datatable tbody tr td {
+                /*border: none !important;*/
+                /*background: none !important;*/
+                font-size: 12px !important;
+                padding: 3px 10px !important;
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+        </style>
+        <h:outputStylesheet name="css/print-with-border.css" library="ultima-layout" />
+        <link href="https://fonts.googleapis.com/css?family=Stardos+Stencil" rel="stylesheet" />
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>LIST OF ORDER REQUESTS - CORPORATE</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/reports/report-order-request" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/reports/report-order-request-in" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                    </p:tabMenu>
+                    <br/>
+                    <h:form id="form">
+                        <p:growl autoUpdate="true" id="msgs" showDetail="true"/>
+                        <div class="ui-g">
+                            <div class="ui-g-12">
+
+                                <p:panelGrid columns="6" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="customer" minQueryLength="3" value="#{reportOrderRequest.customer}" completeMethod="#{reportOrderRequest.customerAutoCompleteCop}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{reportOrderRequest.onItemSelect}" update="msgs" />
+                                            <p:ajax event="blur" listener="#{reportOrderRequest.emptyCustomer}" update="msgs" />
+                                        </p:autoComplete>
+                                        <h:message for="customer" style="color:red" />
+                                        <label>Customer</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="date_from" value="#{reportOrderRequest.date_from}"  pattern="yyyy-MM-dd" mask="true" >
+                                        </p:calendar> 
+                                        <label>Date From</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="date_to" value="#{reportOrderRequest.date_to}"  pattern="yyyy-MM-dd" mask="true"  >
+                                        </p:calendar> 
+                                        <label>Date To</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:commandButton value="Search"  actionListener="#{reportOrderRequest.searchActionCop()}" icon="ui-icon-search" iconPos="right" update="form" rendered="true" style="width:auto">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+
+                                <p:dataTable var="orders" value="#{reportOrderRequest.voucherList}" selectionMode="single" reflow="true"
+                                             selection="#{reportOrderRequest.selectedVoucher}" rowKey="#{orders.id}" paginator="true" rows="10" lazy="true">
+                           
+                                    <p:column headerText="Id" sortBy="#{orders.id}" style="text-align: center; width: 8%;">
+                                        <h:outputText value="#{orders.id}" />
+                                    </p:column>
+
+                                    <p:column headerText="Customer" sortBy="#{orders.customer}" style="text-align: left; width: 19%;">
+                                        <h:outputText value="#{orders.customer}" />
+                                    </p:column>
+
+                                    <p:column headerText="Ordered Date" sortBy="#{orders.date}" style="text-align: center; width: 10%;">
+                                        <h:outputText value="#{orders.date}" />
+                                    </p:column>
+
+                                    <p:column headerText="Description" sortBy="#{orders.description}" style="width: 44%;">
+                                        <h:outputText value="#{orders.description}" />
+                                    </p:column>
+       
+                                    <p:column headerText="" style="text-align: center; width: 8%;">
+                                        <p:commandButton value="Invoice"  actionListener="#{reportOrderRequest.loadInvoice(orders)}" icon="ui-icon-open-in-new"  styleClass="secondary "/>
+                                    </p:column>
+
+                                    <p:column headerText=""  style="width: 4%;">
+                                        <p:commandButton value="" type="button" onclick="PF('dlg1').show();" icon="ui-icon-remove-red-eye" styleClass="amber-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportOrderRequest.printAction(orders)}" update="orderView" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <p:column headerText="" style="width: 4%;">
+                                        <p:commandButton value="" type="button" icon="ui-icon-print" styleClass="cyan-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportOrderRequest.printAction(orders)}" update="orderPrint" />
+                                            <p:printer target="orderPrint" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <p:column headerText="" style="width: 4%; ">
+                                        <p:commandButton value="" type="button" icon="ui-icon-close" styleClass="red-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportOrderRequest.deleteAction(orders)}" update="form" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                 
+
+                                </p:dataTable>
+
+                            </div>
+                        </div>
+
+                    </h:form>
+                    <h:form>
+                        <p:remoteCommand name="onload" action="#{reportOrderRequest.searchActionCopByDefaultDate()}" update="form"/>
+                    </h:form>
+
+                </div>
+
+                <p:dialog header="Order View" id="model_1" widgetVar="dlg1" modal="true" height="700" width="800" responsive="true" >
+
+                    <h:form id="orderView" >
+                        <p:growl autoUpdate="true" />
+
+
+                        <!--<div style="text-align: center;"><span style="line-height: 40px; font-size: 27px;">ORDER REQUEST</span></div>-->
+
+                        <div class="ui-g" >
+                            <div class="ui-g-8" style=" font-size: 14px; padding-left: 30px;">
+                                <h4>Customer Details</h4>
+                                <label>Name: #{orderPrint.customerName}</label><br/>
+                                <label>Address: #{orderPrint.customerAddress}</label>
+                            </div>
+                            <div class="ui-g-4" style=" font-size: 14px; margin-top: 3px; line-height: 20px; ">
+                                <label>Order No: #{orderPrint.orderNo}</label><br/>
+                                <label>Date: #{orderPrint.orderDate}</label><br/>
+                                <label>P.O. No: #{orderPrint.poNo}</label><br/>       
+                            </div>
+                        </div>
+
+
+                        <p:dataTable id="printTable"  var="in" value="#{orderPrint.orderItemList}"  style="padding-left: 25px; max-width: 670px; margin-bottom:10px; margin-top: 10px; font-size: 14px; ">
+
+                            <p:column headerText="Quantity" style="text-align: center; width: 50px; ">
+                                #{in.qty}
+                            </p:column>
+
+                            <p:column headerText="Item Name" style="text-align: left; width: 300px;">
+                                #{in.productName}
+                            </p:column>
+
+                            <p:column headerText="Unit Price" style="text-align: right; width: 70px; ">
+                                #{in.price}
+                            </p:column>
+
+                            <p:column headerText="Line Total" style="text-align: right; width: 120px; ">
+                                #{in.tine_total}
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <div class="ui-g-12" style="padding-left: 25px;">
+                            <p:inputTextarea value="#{orderPrint.orderDescription}" style=" width: 670px; margin: auto; height: 240px; border: 1px solid silver; padding: 7px; font-size: 15px;" />
+                        </div>
+
+                    </h:form>
+                </p:dialog>
+
+                <p:dialog header="Order Print" id="model_2" widgetVar="dlg2" modal="true" height="400" width="800" responsive="true" >
+
+                    <h:form id="orderPrint" >
+                        <p:growl autoUpdate="true" />
+
+                        <div class="ui-g" style="margin-top: 0px;">
+                            <div class="ui-g-3">
+                                <img src="http://178.238.234.42/billing-system-1.0/javax.faces.resource/Leeds-Logo.jpg.xhtml?ln=images" style="max-width: 170px;"/>
+                            </div>
+                            <div class="ui-g-9" style="margin-top: 20px;" >
+
+                                <h1 style="font-family: 'Stardos Stencil', cursive;">Leeds Graphics (PVT) Ltd.</h1>
+                                <!--                                <p>No. 356E, Pannipitiya Road, Thalawathugoda.<br/>
+                                                                    Tel: 4-301616/2796151 Fax: 4301616<br/>
+                                                                    E-mail: leedsgraphics@yahoo.com</p>-->
+                            </div>
+                        </div>
+
+                        <div style="text-align: center;"><span style="line-height: 40px; font-size: 27px;">ORDER REQUEST</span></div>
+
+                        <div class="ui-g" >
+                            <div class="ui-g-8" style=" font-size: 14px; padding-left: 30px;">
+                                <label style="font-size: 17px;">Customer Details</label><br/>
+                                <label>Name: #{orderPrint.customerName}</label><br/>
+                                <label>Address: #{orderPrint.customerAddress}</label>
+                            </div>
+                            <div class="ui-g-4" style=" font-size: 14px; margin-top: 3px; line-height: 20px; ">
+                                <label>Order No: #{orderPrint.orderNo}</label><br/>
+                                <label>Date: #{orderPrint.orderDate}</label><br/>
+                                <label>P.O. No: #{orderPrint.poNo}</label><br/>       
+                            </div>
+                        </div>
+
+
+                        <p:dataTable id="printTable"  var="in" value="#{orderPrint.orderItemList}"  style="padding-left: 25px; max-width: 670px; margin-bottom:10px; margin-top: 10px; ">
+
+                            <p:column headerText="Quantity" style="text-align: center; width: 12%; ">
+                                <label style="font-size: 14px;">#{in.qty}</label>
+                            </p:column>
+
+                            <p:column headerText="Item Name" style="text-align: left; width: 60% ">
+                                <label style="font-size: 14px;">#{in.productName}</label>
+                            </p:column>
+
+                            <p:column headerText="Unit Price" style="text-align: right; width: 12% ">
+                                <label style="font-size: 14px;">#{in.price}</label>
+                            </p:column>
+
+                            <p:column headerText="Line Total" style="text-align: right; width: 14% ">
+                                <label style="font-size: 14px;">#{in.tine_total}</label>
+                            </p:column>
+
+                        </p:dataTable>
+
+                        <div class="ui-g-12" style="padding-left: 25px;">
+                            <p:inputTextarea value="#{orderPrint.orderDescription}" style=" width: 670px; margin: auto; height: 260px; border: 1px solid silver; padding: 7px; font-size: 14px; " />
+                        </div>
+
+                        <div class="ui-g-4" style="line-height: 10px; text-align: center; margin-top: 20px; ">
+                            <p>...................................</p>
+                            <p>Signature</p>
+                        </div>
+
+                    </h:form>
+                </p:dialog>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

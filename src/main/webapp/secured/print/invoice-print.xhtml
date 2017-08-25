@@ -1,0 +1,41 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+
+    <h:form id="invoicePrint">
+        <p:growl autoUpdate="true" />
+        <p:dataTable id="printTable" var="in" value="#{invoicePrint.invoiceItemList}" style="margin-bottom:20px">
+
+            <p:column headerText="Item Name">
+                <f:facet name="output"><h:outputText value="#{in.productName}" /></f:facet>
+            </p:column>
+
+            <p:column headerText="Quantity" style="text-align: right;">
+                <f:facet name="output"><h:outputText value="#{in.qty}" /></f:facet>
+            </p:column>
+
+            <p:column headerText="Unit Price" style="text-align: right;">
+                <f:facet name="output"><h:outputText value="#{in.price}" /></f:facet>
+            </p:column>
+
+            <p:column style="text-align: right;">
+                <f:facet name="header">Line Total</f:facet>
+                    #{in.tine_total}
+            </p:column>
+
+        </p:dataTable>
+
+        <div class="row" style="text-align: right;">                                         
+            <div class="col s12" style="padding-right: 110px;" >     
+                <h:outputText value="#{invoicePrint.invoiceTotal}"  style="color: black; font-size: 15px; " />
+            </div>
+        </div>
+
+    </h:form>
+
+
+</ui:composition>

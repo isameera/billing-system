@@ -1,0 +1,223 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+
+            .payment-history.ui-datatable tbody tr.ui-widget-content td {
+                padding: 2px 5px !important;
+            }
+
+
+
+        </style>
+        <h:outputStylesheet name="css/print-with-border.css" library="ultima-layout" />
+        <link href="https://fonts.googleapis.com/css?family=Stardos+Stencil" rel="stylesheet" />
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>CORPORATE CREDIT NOTE</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/credit-note" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/receipt-in" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                    </p:tabMenu>
+                    <br/>
+
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+
+
+                            <h:form id="form">
+                                <p:growl autoUpdate="true" id="msgs" showDetail="true"/>
+                                <div class="ui-g">
+                                    <div class="ui-g-12">
+
+                                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:autoComplete id="customer" minQueryLength="3" value="#{creditNote.customer}" completeMethod="#{creditNote.completeCustomersList}" effect="fade" style="width: 100%;">
+                                                    <p:ajax event="itemSelect" listener="#{creditNote.onInvoiceItemSelect}" update="msgs" />
+                                                    <p:ajax event="blur" listener="#{creditNote.emptyCustomer}" update="msgs" />
+                                                </p:autoComplete>
+                                                <h:message for="customer" style="color:red" />
+                                                <label>Customer</label>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:calendar id="date_from" value="#{creditNote.date_from}"  pattern="yyyy-MM-dd" mask="true" >
+                                                </p:calendar> 
+                                                <label>Date From</label>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:calendar id="date_to" value="#{creditNote.date_to}"  pattern="yyyy-MM-dd" mask="true"  >
+                                                </p:calendar> 
+                                                <label>Date To</label>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:commandButton value="Search"  actionListener="#{creditNote.Search}" icon="ui-icon-search" iconPos="right" update="creditNoteTable" rendered="true" style="width:auto">
+
+                                                </p:commandButton>  
+                                            </h:panelGroup>
+
+                                        </p:panelGrid>
+
+
+                                        <p:dataTable id="creditNoteTable" var="inv" value="#{creditNote.invoiceLists}" selectionMode="single" reflow="true"
+                                                     selection="#{creditNote.selectedInvoises}" rowKey="#{inv.id}" paginator="true" rows="10" lazy="true">
+
+                                            <p:column headerText="Id" sortBy="#{inv.id}" style="text-align: center; width: 10%;">
+                                                <h:outputText value="#{inv.id}" />
+                                            </p:column>
+
+                                            <p:column headerText="Date" sortBy="#{inv.date}" style="text-align: center; width: 10%;">
+                                                <h:outputText value="#{inv.date}" />
+                                            </p:column>
+
+                                            <p:column headerText="Customer" sortBy="#{inv.customer}" style="text-align: left; width: 25%;">
+                                                <h:outputText value="#{inv.customer}" />
+                                            </p:column>
+
+                                            <p:column headerText="Description" sortBy="#{inv.description}" style="text-align: left; width: 30%;">
+                                                <h:outputText value="#{inv.description}" />
+                                            </p:column>
+
+                                            <p:column headerText="Invoice Total" sortBy="#{inv.invoiceTotal}" style="text-align: right; width: 15%;">
+                                                <h:outputText value="#{inv.invoiceTotal}" />
+                                            </p:column>
+
+                                            <p:column headerText=""  style="text-align: center; width: 10%;">
+                                                <p:commandButton value="Load" type="button" onclick="PF('dlg1').show();" styleClass="secondary" style="width:100%">
+                                                    <p:ajax listener="#{creditNote.loadCreditNoteView(inv)}" update="creditNoteView" />
+                                                </p:commandButton>
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </div>
+                                </div>
+
+                            </h:form>
+
+                            <h:form>
+                                <p:remoteCommand name="onload" action="#{creditNote.emptyTable()}" update="InvoiceTable"/>
+                            </h:form>
+
+                            <p:dialog header="Create Credit Note" id="model_1" widgetVar="dlg1" modal="true" height="500" width="1000" responsive="true">
+                                <p:panel id="creditNoteView" style="border: none;">
+
+                                    <h2 style="text-align: right; padding-right: 15px;">REF. INVOICE NO: <h:outputLabel id="invoiceNo" value="#{creditNote.refInvoiceNo}" /> / CREDIT NOTE NO: <h:outputLabel id="creditNoteId"  value="#{creditNote.creditNoteNo}" /></h2>
+
+                                    <h:form id="InvoiceTable">
+                                        <p:growl id="msg" autoUpdate="true" showDetail="true"/>
+
+                                        <p:dataTable id="invoice" var="inv" value="#{creditNote.invoiceItemList}" editable="true" style="margin-bottom:20px">
+
+                                            <p:ajax event="rowEdit" listener="#{creditNote.onRowEdit}"  />
+                                            <p:ajax event="rowEditCancel" listener="#{invoiceCop.onRowCancel}" update=":InvoiceTable:msg" />
+
+                                            <p:column headerText="Item Name">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"><h:outputText value="#{inv.productName}" /></f:facet>
+                                                    <f:facet name="input"><p:autoComplete id="itemName" minQueryLength="3" value="#{inv.productName}"  completeMethod="#{invoiceCop.completeItem}" effect="fade" style="width: 100%;"></p:autoComplete></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+
+                                            <p:column headerText="Quantity" style="text-align: right;">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"><h:outputText value="#{inv.qty}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText value="#{inv.qty}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+
+                                            <p:column style="text-align: right;">
+                                                <f:facet name="header">Unit Price</f:facet>
+                                                    #{inv.price}
+                                            </p:column>
+
+                                            <p:column style="text-align: right;">
+
+                                                <f:facet name="header">Line Total</f:facet>
+                                                    #{inv.tine_total}
+
+                                            </p:column>
+
+                                            <p:column style="width:40px">
+                                                <p:rowEditor />
+                                            </p:column>
+
+                                            <p:column style="width:26px">
+                                                <p:commandButton actionListener="#{invoiceCop.deleteAction(inv)}" styleClass="red-btn " update="InvoiceTable" icon="ui-icon-delete" style="max-width: 12px; max-height: 24px; color: red;">
+                                                    <!--<f:ajax execute="@form" render="@form" />-->
+                                                </p:commandButton>  
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                        <p:panelGrid columns="1" layout="grid" style="border: none;">
+                                            <p:commandButton value="Save Credit Note" styleClass="cyan-btn"   actionListener="#{invoiceCop.SaveCorporateInvoice}"  update="InvoiceTable" >
+                                                <!--<f:ajax execute="@form" render="@form" />-->
+                                            </p:commandButton>  
+                                        </p:panelGrid>
+
+                                    </h:form>
+
+                                </p:panel>
+
+                            </p:dialog>   
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

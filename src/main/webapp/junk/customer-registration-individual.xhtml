@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"   
+      xmlns:p="http://primefaces.org/ui" xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <!--xmlns:f="http://java.sun.com/jsf/core"-->
+    <!--xmlns:ui="http://java.sun.com/jsf/facelets"-->
+    <h:head>
+        <!--Import Google Icon Font-->
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css"/>
+
+        <!--Import jQuery before materialize.js-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+
+        <link rel="shortcut icon" type="image/x-icon" href="images/exon-favicon-ii.png"/>
+        <title>Customer Registration Individual | Exon Billing System</title>
+        
+    </h:head>
+
+    <h:body styleClass="cyan lighten-5">
+
+        <main class="container valign-wrapper">
+
+            <div class="section">
+                <!--<div class="container">-->
+
+                <div class="row center ">
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="row center "><h4 class="thin">CUSTOMER REGISTRATION INDIVIDUAL</h4></div>
+
+                            <f:view>
+                                <h:form id="customer-registration">
+                                    <p:growl autoUpdate="true" />
+
+                                    <div class="row">
+                                        <div class="input-field col s2">
+                                            <h:inputText id="title" required="true" requiredMessage="Entry Title"></h:inputText>
+                                            <!--<input id="first_name" type="text" class="validate"/>-->
+                                            <label for="title">Title</label>
+                                        </div>
+                                        <div class="input-field col s5">
+                                            <h:inputText id="name" required="true" requiredMessage="Enter First Name"></h:inputText>
+                                            <!--<input id="first_name" type="text" class="validate"/>-->
+                                            <label for="first_name">First Name</label>
+                                        </div>
+                                        <div class="input-field col s5">
+                                            <h:inputText id="last_name" required="true" requiredMessage="Enter Last Name"></h:inputText>
+                                            <label for="last_name">Last Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input value="I am not editable" type="text" class="validate"/>
+                                            <label for="disabled">Disabled</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input id="password" type="password" class="validate"/>
+                                            <label for="password">Password</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s12">
+                                            <input id="email" type="email" class="validate"/>
+                                            <label for="email">Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="row ">
+                                        <div class="col s12 input-field right">
+                                            <h:commandLink value="Submit" styleClass="btn btn-large" />
+                                        </div>
+                                    </div>
+                                </h:form>
+                            </f:view>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--</div>-->
+
+
+        </main>
+
+        <footer class="page-footer">
+            <div class="footer-copyright">
+                <div class="container">
+                    © 2017 Exon Software Solutions (Pvt) Ltd.
+                    <a class="grey-text text-lighten-4 right" href="#!">Leeds Graphics (Pvt) Ltd.</a>
+                </div>
+            </div>
+        </footer>
+
+
+        <style type="text/css">
+            body {
+                display: flex;
+                display: -webkit-flex;
+                min-height: 100vh;
+                flex-direction: column;
+                -webkit-flex-direction: column;
+            }
+
+            main {
+                flex-grow: 1;
+                flex-shrink: 0;
+                flex-basis: auto;
+
+                -webkit-flex-grow: 1;
+                -webkit-flex-shrink: 0;
+                -webkit-flex-basis: auto;
+            }
+
+            .page-footer {
+                padding-top: 0px; 
+                background-color: #ee6e73;
+            }
+
+            .page-footer .footer-copyright {
+                min-height: 30px;
+                padding: 6px 0px;
+            }
+
+
+        </style>
+        <script>
+//            $(document).on("ready", function () {
+//                $("#login-page").css({'height': window.innerHeight + 'px'});
+//            });
+        </script>
+    </h:body>
+
+
+</html>
+

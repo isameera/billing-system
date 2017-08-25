@@ -1,0 +1,232 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>LIST OF CUSTOMERS</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/reports/report-customer-registration" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/reports/report-customer-registration-in" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                          <p:menuitem value="INDIVIDUAL COMPANY" outcome="/secured/reports/report-customer-registration-in-co" icon="ui-icon-domain">
+                            <f:param name="i" value="2" />
+                        </p:menuitem>
+                    </p:tabMenu>
+
+                    <h:form id="form">
+                        <p:growl autoUpdate="true" id="msgs" showDetail="true"/>
+                        <div class="ui-g">
+                            <div class="ui-g-12">
+                                <br/>
+                                <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="customer" minQueryLength="3" value="#{reportCustomerRegisterIndividual.customer}" completeMethod="#{reportCustomerRegisterIndividual.completeList}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{reportCustomerRegisterIndividual.onItemSelect}" update="msgs" />
+                                        </p:autoComplete>
+                                        <h:message for="customer" style="color:red" />
+                                        <label>Customer</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:commandButton value="Search"  actionListener="#{reportCustomerRegisterIndividual.searchCustomer}" icon="ui-icon-search" iconPos="right" update="@all" rendered="true" styleClass="cyan-btn" style="width:auto">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+
+                                <p:dataTable var="customers" value="#{reportCustomerRegisterIndividual.customersLists}"  reflow="true"
+                                             rowKey="#{customers.code}" paginator="true" rows="10" lazy="true">
+
+                                    <p:column headerText="Code" sortBy="#{customers.code}" style="width: 10%;">
+                                        <h:outputText value="#{customers.code}" />
+                                    </p:column>
+
+                                    <p:column headerText="Name" sortBy="#{customers.name}" style="width: 40%;">
+                                        <h:outputText value="#{customers.name}" />
+                                    </p:column>
+
+                                    <p:column headerText="Phone" sortBy="#{customers.phone}" style="width: 10%;">
+                                        <h:outputText value="#{customers.phone}" />
+                                    </p:column>
+
+                                    <p:column headerText="Email" sortBy="#{customers.email}" style="width: 30%;">
+                                        <h:outputText value="#{customers.email}" />
+                                    </p:column>
+
+                                    <p:column headerText=""  style="text-align: center; width: 10%;" >
+                                        <p:commandButton value="View" type="button" onclick="PF('dlg1').show();" styleClass="secondary" style="width:100%">
+                                            <p:ajax listener="#{reportCustomerRegisterIndividual.loadCustomerInfo(customers)}" update="CustomerInfo" />
+                                        </p:commandButton>                                   
+                                    </p:column>
+                                </p:dataTable>
+
+                            </div>
+                        </div>
+
+                    </h:form>
+
+                    <h:form>
+                        <p:remoteCommand name="onload" action="#{reportCustomerRegisterIndividual.loadCustomersList}" autoRun="true" update="form"/>
+                    </h:form>
+
+                </div>
+
+                <p:dialog header="Customer Information" id="model_1" widgetVar="dlg1" modal="true" height="450" width="500" responsive="true">
+
+                    <hr/>
+                    <h:form id="CustomerInfo">
+
+                        <h:panelGrid columns="2" cellpadding="5" >
+
+                            <h:outputLabel for="code" value="Code:" />
+                            <p:outputLabel id="codeInput" value="#{reportCustomerRegisterIndividual.code}" />
+
+                            <h:outputLabel for="nic" value="NIC:" />
+                            <p:inplace id="nic" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editNic}" />
+                                <p:inputText value="#{reportCustomerRegisterIndividual.nic}" required="true" label="text" requiredMessage="NIC field is required."/>
+                            </p:inplace>
+
+                            <h:outputLabel for="title" value="Title:"/>
+                            <p:inplace id="title" label="#{reportCustomerRegisterIndividual.title}" effectSpeed="fast" event="dblclick">
+                                <p:selectOneMenu required="true" valueChangeListener="#{reportCustomerRegisterIndividual.editTitle}" requiredMessage="Select Title.">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItem itemLabel="Mr" itemValue="Mr" />
+                                    <f:selectItem itemLabel="Mrs" itemValue="Mrs" />
+                                    <f:selectItem itemLabel="Miss" itemValue="Miss" />
+                                    <f:selectItem itemLabel="Dr" itemValue="Dr" />
+                                    <f:selectItem itemLabel="Ven" itemValue="Ven" />
+                                    <p:ajax event="valueChange" immediate="true" process="@this" />
+                                </p:selectOneMenu>
+                            </p:inplace>
+
+                            <h:outputLabel for="first_name" value="First Name:" />
+                            <p:inplace id="first_name" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editFirstName}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.first_name}" required="true" label="text" requiredMessage="First Name field is required."/>
+                            </p:inplace>
+
+                            <h:outputLabel for="mid_name" value="Mid Name:" />
+                            <p:inplace id="mid_name" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editMidName}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.mid_name}" label="text" requiredMessage="Mid Name field is required."/>
+                            </p:inplace>
+
+                            <h:outputLabel for="last_name" value="Last Name:" />
+                            <p:inplace id="last_name" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editLastName}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.last_name}" required="true" label="text" requiredMessage="Last Name field is required."/>
+                            </p:inplace>
+
+                            <h:outputLabel for="no" value="No:" />
+                            <p:inplace id="no" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editNo}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.no}" required="true" label="text" requiredMessage="The no field is required."/>
+                            </p:inplace>
+
+                            <h:outputLabel for="street" value="Street:" />
+                            <p:inplace id="street" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editStreet}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.street}" required="true" label="text" requiredMessage="The street field is required."/>
+                            </p:inplace>
+
+                            <h:outputLabel for="city" value="City:" />
+                            <p:inplace id="city" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editCity}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.city}" required="true" label="text" requiredMessage="The city field is required."/>
+                            </p:inplace>
+
+                            <h:outputLabel for="gender" value="Gender:"/>
+                            <p:inplace id="gender" label="#{reportCustomerRegisterIndividual.gender}" effectSpeed="fast" event="dblclick">
+                                <p:selectOneMenu required="true" valueChangeListener="#{reportCustomerRegisterIndividual.editGender}" requiredMessage="Select gender.">
+                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                    <f:selectItem itemLabel="Male" itemValue="Male" />
+                                    <f:selectItem itemLabel="Female" itemValue="Female" />
+                                    <p:ajax event="valueChange" immediate="true" process="@this" />
+                                </p:selectOneMenu>
+                            </p:inplace>
+
+                            <h:outputLabel for="phone_i" value="Phone i:" />
+                            <p:inplace id="phone_i" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editMobilePhone}"/>
+                                <p:inputText required="true" value="#{reportCustomerRegisterIndividual.phone_i}" maxlength="10" styleClass="numeric-only" requiredMessage="The phone number field is required." validatorMessage="Invalid Phone Number">
+                                    <f:validateRegex pattern="[0-9]+" />
+                                </p:inputText>
+                                <p:message for="phone_i" style="color:red" />
+                            </p:inplace>
+
+                            <h:outputLabel for="phone_ii" value="Phone ii:" />
+                            <p:inplace id="phone_ii" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editHomePhone}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.phone_ii}" styleClass="numeric-only" validatorMessage="Invalid Length"></p:inputText>
+                            </p:inplace>
+
+                            <h:outputLabel for="email" value="Email:" />
+                            <p:inplace id="email" editor="true">
+                                <p:ajax event="save" listener="#{reportCustomerRegisterIndividual.editEmail}"/>
+                                <p:inputText value="#{reportCustomerRegisterIndividual.email}"  required="true" requiredMessage="The email address field is required." validatorMessage="Invalid email format">
+                                    <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"  />
+                                </p:inputText>
+                                <p:message for="email" style="color:red" />
+                            </p:inplace>
+
+                        </h:panelGrid>
+                    </h:form>
+
+                </p:dialog> 
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

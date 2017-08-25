@@ -1,0 +1,291 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+
+            .ui-datatable tbody tr.ui-datatable-even.ui-state-highlight {
+                /*background-color:  #ff5a92 !important;*/
+            }
+
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+        <h:outputStylesheet name="css/print.css" library="ultima-layout" />
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>CORPORATE INVOICE</h1>
+
+<!--                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/invoice" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/invoice" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                    </p:tabMenu>-->
+
+                    <h2 style="text-align: right; padding-right: 15px;">ORDER NO: <h:outputLabel id="orderNo"  value="#{invoiceCop.orderNo}" /> / INVOICE NO: <h:outputLabel id="invoiceNo"  value="#{invoiceCop.invoiceNo}" /></h2>
+
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+
+                            <h:form id="form">
+                                <p:growl id="msgs" autoUpdate="true" showDetail="true"/>
+
+                                <p:dataTable id="invoice" var="inv" value="#{invoiceCop.invoiceItemList}" editable="true" style="margin-bottom:20px">
+
+                                    <p:ajax event="rowEdit" listener="#{invoiceCop.onRowEdit}" update="formSave" />
+                                    <p:ajax event="rowEditCancel" listener="#{invoiceCop.onRowCancel}" update=":form:msgs" />
+
+                                    <p:column headerText="Item Name">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{inv.productName}" /></f:facet>
+                                            <f:facet name="input"><p:autoComplete id="itemName" minQueryLength="3" value="#{inv.productName}"  completeMethod="#{invoiceCop.completeItem}" effect="fade" style="width: 100%;"></p:autoComplete></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column headerText="Quantity" style="text-align: right;">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{inv.qty}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{inv.qty}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column style="text-align: right;">
+                                        <f:facet name="header">Unit Price</f:facet>
+                                            #{inv.price}
+                                    </p:column>
+
+                                    <p:column headerText="Line Lotal" style="text-align: right;">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{inv.tine_total}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{inv.tine_total}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                        </p:cellEditor>
+
+                                    </p:column>
+
+                                    <p:column style="width:40px">
+                                        <p:rowEditor />
+                                    </p:column>
+
+                                    <p:column style="width:26px">
+                                        <p:commandButton actionListener="#{invoiceCop.deleteAction(inv)}" styleClass="red-btn " update="form formSave" icon="ui-icon-delete" style="max-width: 12px; max-height: 24px; color: red;">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </p:column>
+
+                                </p:dataTable>
+                            </h:form>
+
+                            <h:form id="formAddToTable">
+                                <p:growl id="msgs_1" autoUpdate="true" showDetail="true"/>
+                                <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="itemName" minQueryLength="3" value="#{invoiceCop.productName}" required="true" requiredMessage="Item Name field is required." completeMethod="#{invoiceCop.completeItem}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{invoiceCop.onItemSelect}" update="msgs_1" />
+                                        </p:autoComplete>
+                                        <p:message for="itemName" style="color:red" />
+                                        <label>Item Name</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="qty" value="#{invoiceCop.qty}" required="true" requiredMessage="Quantity field is required." styleClass="double-only"></p:inputText>
+                                        <p:message for="qty" style="color:red" />
+                                        <label>Quantity</label>
+                                    </h:panelGroup>                                   
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="price"  value="#{invoiceCop.price}" required="true" requiredMessage="Price field is required." styleClass="double-only"></p:inputText>
+                                        <p:message for="price" style="color:red" />
+                                        <label>Price</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:commandButton value="Add to Table" actionListener="#{invoiceCop.addRow}" update="form formAddToTable formSave" styleClass="amber-btn " rendered="true" icon="ui-icon-add-circle-outline" iconPos="right" style="width:auto;" />
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+                            </h:form>
+
+                            <h:form id="formSave" style="background: #F7FBF0  ; padding-top: 20px; border: 1px solid silver;">
+                                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <p:selectManyCheckbox layout="responsive" columns="2" valueChangeListener="#{invoiceCop.vatFilter}">
+                                        <p:ajax event="valueChange" update="formSave"/>
+                                        <f:selectItem itemLabel="NBT" itemValue="2" />
+                                        <f:selectItem itemLabel="VAT" itemValue="1" />
+                                    </p:selectManyCheckbox>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="vatno"  value="#{invoiceCop.vatNo}"  requiredMessage="VAT No is required." ></p:inputText>
+                                        <label>VAT No</label>
+                                        <p:message for="vatno" style="color:red" />
+                                    </h:panelGroup>
+
+                                    <h:panelGroup >   </h:panelGroup>
+
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="po_no"  value="#{invoiceCop.poNo}"  requiredMessage="Current Payment is required." ></p:inputText>
+                                        <label>PO No</label>
+                                        <p:message for="po_no" style="color:red" />
+                                    </h:panelGroup>
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="dn_no"  value="#{invoiceCop.dnNo}"  requiredMessage="Current Payment is required." ></p:inputText>
+                                        <label>DN No</label>
+                                        <p:message for="dn_no" style="color:red" />
+                                    </h:panelGroup>
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="currentPayment"  value="#{invoiceCop.payment}" required="true" requiredMessage="Current Payment is required." styleClass="double-only"></p:inputText>
+                                        <label>Current Payment</label>
+                                        <p:message for="currentPayment" style="color:red" />
+                                    </h:panelGroup>
+
+                                    <h:panelGroup style="font-weight: bold;">                                        
+                                        <label>Invoice Total: </label><h:outputText id="invoiceTotal" value="#{invoiceCop.invoiceTotal}"/>
+                                    </h:panelGroup>  
+                                    <h:panelGroup style="font-weight: bold;">                                        
+                                        <label>Advance Paid: </label><h:outputText id="advance" value="#{invoiceCop.advance}"/>
+                                    </h:panelGroup>      
+                                    <h:panelGroup style="font-weight: bold;">                                        
+                                        <label>Due Amount: </label><h:outputText id="balance" value="#{invoiceCop.invoiceDue}"/>
+                                    </h:panelGroup>  
+
+                                </p:panelGrid>
+
+                                <p:panelGrid columns="1" layout="grid" style="border: none;">
+                                    <p:commandButton value="Save Invoice" styleClass="cyan-btn"   actionListener="#{invoiceCop.SaveCorporateInvoice}"  update="form formAddToTable formSave invoicePrint" >
+                                        <!--<f:ajax execute="@form" render="@form" />-->
+                                    </p:commandButton>  
+                                </p:panelGrid>
+
+                            </h:form>
+                        </div>
+                    </div>
+                </div>
+
+                <p:dialog header="Print Invoice" id="print_button" widgetVar="dlg3" modal="true" height="80" width="300" responsive="true">
+                    <h:form>
+                        <p:growl autoUpdate="true" />
+                        <div class="ui-g" >
+                            <div class="ui-g-1" ></div>
+                            <div class="ui-g-10" >
+                                <p:commandButton value="Print" type="button" onclick="PF('dlg3').hide();" icon="ui-icon-print" styleClass="amber-btn" style="width:100%; height: 40px">
+                                    <p:printer target="invoicePrint" />
+                                </p:commandButton>
+                            </div>
+                            <div class="ui-g-1" ></div>
+                        </div>
+                    </h:form>
+                </p:dialog>
+
+
+                <p:dialog header="Invoice Preview" id="model_2" widgetVar="dlg2" modal="true" height="400" width="800" responsive="true" >
+
+                    <h:form id="invoicePrint">
+                        <p:growl autoUpdate="true" />
+
+                        <div class="ui-g" style="margin-top: 164px;">
+                            <div class="ui-g-7" style=" font-size: 14px;  line-height: 30px;  padding-left: 40px;">
+                                <label>&#160;&#160;&#160;&#160;&#160;&#160;&#160; #{invoicePrint.customerName}</label><br/>
+                                <label>#{invoicePrint.customerAddress}</label><br/>
+                                <label>#{invoicePrint.customerCity}</label><br/>
+                                <label>#{invoicePrint.vatNo}</label>
+                            </div>
+                            <div class="ui-g-2"></div>
+                            <div class="ui-g-3" style=" font-size: 14px; margin-top: 3px; line-height: 26px; padding-left: 40px;">
+                                <label>#{invoicePrint.invoiceDate}</label><br/>
+                                <label>#{invoicePrint.invoiceNo}</label><br/>                                      
+                                <label>#{invoicePrint.dnNo}</label><br/>
+                                <label>#{invoicePrint.poNo}</label><br/>
+                                <label>#{invoicePrint.orderNo}</label>      
+                            </div>
+                        </div>
+
+
+                        <p:dataTable id="printTable"  var="in" value="#{invoicePrint.invoiceItemList}"  style="padding-left: 25px; max-width: 670px; margin-bottom:10px; margin-top: 35px; ">
+
+                            <p:column  style="text-align: center; width: 50px; ">
+                                #{in.qty}
+                            </p:column>
+
+                            <p:column  style="text-align: left; width: 325px;">
+                                #{in.productName}
+                            </p:column>
+
+                            <p:column  style="text-align: center; width: 45px; ">
+                                #{in.price}
+                            </p:column>
+
+                            <p:column style="text-align: right; width: 120px; ">
+                                #{in.tine_total} &#160;&#160;&#160;&#160;&#160; #{in.line_total_decimal}
+                            </p:column>
+
+                        </p:dataTable>
+
+
+                        <div class="ui-g" style="margin-top: 0px;">
+                            <div class="ui-g-7" style=" font-size: 14px;  line-height: 34px;  padding-left: 40px;">
+
+                            </div>
+                            <div class="ui-g-2">
+<!--                                <div><p:outputLabel value="2%" rendered="#{invoicePrint.nbtNum ne ''}" /></div>
+                                <div style="padding-top: 37px;"> <p:outputLabel value="15%" rendered="#{invoicePrint.vatNum ne ''}" /></div>-->
+                            </div>
+                            <div class="ui-g-3" style=" font-size: 13px; text-align: right; padding-right: 53px;">
+                                <div>#{invoicePrint.nbtNum} &#160;&#160;&#160;&#160;&#160; #{invoicePrint.nbtDes}</div>
+                                <div style="padding-top: 6px;">#{invoicePrint.grossNum} &#160;&#160;&#160;&#160;&#160; #{invoicePrint.grossDes}</div>
+                                <div style="padding-top: 7px;"> #{invoicePrint.vatNum} &#160;&#160;&#160;&#160;&#160; #{invoicePrint.vatDes}</div>
+                                <div style="padding-top: 8px;">#{invoicePrint.invoiceTotal} &#160;&#160;&#160;&#160;&#160; #{invoicePrint.invoiceTotalDes}</div>
+                            </div>
+                        </div>
+
+                    </h:form>
+                </p:dialog>  
+
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

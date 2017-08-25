@@ -1,0 +1,213 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>ORDER REQUEST</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/order-request" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/order-request" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                    </p:tabMenu>
+
+                    <h2 style="text-align: right; padding-right: 15px;">ORDER NO: <h:outputLabel  value="#{loginBean.order_no}" /></h2>
+
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+
+                            <h:form id="orderFormOne">
+                                <p:growl autoUpdate="true" id="msgs" />
+                                <p:dataTable id="orderTable" var="o" value="#{order.orderList}" editable="true" style="margin-bottom:20px">
+
+                                    <p:ajax event="rowEdit" listener="#{order.onRowEdit}" update=":orderFormOne:totl_amount" />
+                                    <p:ajax event="rowEditCancel" listener="#{order.onRowCancel}" update=":orderFormOne:msgs" />
+
+                                    <p:column headerText="Item Name">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{o.productName}" /></f:facet>
+                                            <f:facet name="input"><p:autoComplete id="itemName" minQueryLength="3" value="#{o.productName}"  completeMethod="#{order.completeItem}" effect="fade" style="width: 100%;"></p:autoComplete></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column headerText="Quantity" style="text-align: right;">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{o.qty}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{o.qty}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column headerText="Unit Price" style="text-align: right;">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{o.price}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{o.price}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column style="text-align: right;">
+                                        <f:facet name="header">Line Total</f:facet>
+                                            #{o.line_total}
+                                    </p:column>
+
+                                    <p:column style="width:40px">
+                                        <p:rowEditor />
+                                    </p:column>
+
+                                    <p:column style="width:26px">
+                                        <p:commandButton actionListener="#{order.deleteAction(o)}" styleClass="red-btn " update="orderFormOne orderFormTwo" icon="ui-icon-delete" style="max-width: 12px; max-height: 24px; color: red;">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <div class="row" style="text-align: right;">                                         
+                                    <div class="col s12" style="padding-right: 110px;" >     
+                                        Total Price: <h:outputText id="totl_amount"  value="#{order.voucher_total}"  style="color: black; font-size: 15px; " />
+                                    </div>
+                                </div>
+
+                            </h:form>
+
+                            <br/>
+                            <h:form id="orderFormTwo">
+
+                                <p:growl id="msgs_1" autoUpdate="true" showDetail="true"/>
+                                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="itemName" minQueryLength="3" value="#{order.productName}"  required="true" requiredMessage="Item Name field is required." completeMethod="#{order.completeItem}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{order.onItemNameSelect}" update="msgs_1" />
+                                        </p:autoComplete>
+                                        <p:message for="itemName" style="color:red" />
+                                        <label>Item Name</label>
+                                    </h:panelGroup>
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="qty" value="#{order.qty}" required="true" requiredMessage="Quantity field is required." styleClass="double-only"></p:inputText>
+                                        <p:message for="qty" style="color:red" />
+                                        <label>Quantity</label>
+                                    </h:panelGroup>                                   
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="price"  value="#{order.price}" required="true" requiredMessage="Price field is required." styleClass="double-only"></p:inputText>
+                                        <p:message for="price" style="color:red" />
+                                        <label>Price</label>
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+                                <div style="text-align: right;">
+                                    <p:commandButton value="Add to Table" actionListener="#{order.addAction}" update="orderFormOne orderFormTwo" styleClass="amber-btn " rendered="true" icon="ui-icon-add-circle-outline" iconPos="right" style="width:auto;" />
+                                </div>
+                            </h:form>
+
+
+
+                            <h:form id="orderFormThree">
+                                <p:growl autoUpdate="true" id="msgs" showDetail="true" />
+
+                                <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+
+                                    <p:selectOneMenu id="custom_type" value="#{order.gop_gup_type}" style="margin-bottom:10px;" required="true" requiredMessage="Select a Customer Type." valueChangeListener="#{order.fireSelection}" >
+                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                        <f:selectItem itemLabel="Corporate" itemValue="1" />
+                                        <f:selectItem itemLabel="Individual" itemValue="2" />
+                                        <p:ajax event="valueChange" immediate="true" process="@this" update="customer"/>
+                                    </p:selectOneMenu>
+
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="customer" minQueryLength="3" value="#{order.customer}"  required="true" requiredMessage="Customer field is required." completeMethod="#{order.completeCustomersList}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{order.onCustomerSelect}" update="msgs" />
+                                        </p:autoComplete>
+                                        <p:message for="customer" style="color:red" />
+                                        <label>Customer</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="advance" value="#{order.advance}" styleClass="double-only" requiredMessage="Advance field is required."></p:inputText>
+                                        <p:message for="advance" style="color:red" />
+                                        <label>Advance</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="delivery_date" value="#{order.delivery_date_object}"  pattern="yyyy-MM-dd" mask="true" mindate="#{comBean.current_date}" required="true" requiredMessage="Delivery Date field is required.">
+                                            <p:ajax event="dateSelect" listener="#{order.onDateSelect}" update="msgs" />
+                                        </p:calendar>
+                                        <p:message for="delivery_date" style="color:red" />
+                                        <label>Delivery Date</label>
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+                                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputTextarea id="printing_des" value="#{order.printing_des}" placeholder="Printing Description" requiredMessage="Printing Description field is required."/>
+                                        <p:message for="printing_des" style="color:red" />
+                                    </h:panelGroup>
+
+
+                                    <p:commandButton value="Save" styleClass="cyan-btn" actionListener="#{order.SaveCorporateOrder}" update="orderFormOne orderFormTwo orderFormThree">
+                                        <!--<f:ajax execute="@form" render="@form" />-->
+                                    </p:commandButton>  
+
+                                </p:panelGrid>
+
+                            </h:form>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

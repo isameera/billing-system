@@ -1,0 +1,186 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>OUTSTANDING ENTRY FORM</h1>
+
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+
+                            <h:form id="orderFormOne">
+                                <p:growl autoUpdate="true" id="msgs" />
+                                <p:dataTable id="orderTable" var="o" value="#{outstandingEntryForm.invoiceLists}" editable="true" style="margin-bottom:20px">
+
+                                    <p:ajax event="rowEdit" listener="#{outstandingEntryForm.onRowEdit}" update=":orderFormOne:totl_amount :orderFormOne:totl_outstanding" />
+                                    <p:ajax event="rowEditCancel" listener="#{outstandingEntryForm.onRowCancel}" update=":orderFormOne:msgs" />
+
+                                    <p:column headerText="Invoice No">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{o.invoiceNo}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{o.invoiceNo}" required="true" requiredMessage="Invoice Number field is required."/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column headerText="Date" style="text-align: right;">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{o.date}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{o.date}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column headerText="Invoice Total" style="text-align: right;">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{o.invoiceTotal}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{o.invoiceTotal}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column headerText="Outstanding Amount" style="text-align: right;">
+                                        <p:cellEditor>
+                                            <f:facet name="output"><h:outputText value="#{o.outstandingAmount}" /></f:facet>
+                                            <f:facet name="input"><p:inputText value="#{o.outstandingAmount}" style="width:100%" styleClass="double-only" label="Year"/></f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+
+                                    <p:column style="width:40px">
+                                        <p:rowEditor />
+                                    </p:column>
+
+                                    <p:column style="width:26px">
+                                        <p:commandButton actionListener="#{outstandingEntryForm.deleteAction(o)}" styleClass="red-btn " update="orderFormOne orderFormTwo" icon="ui-icon-delete" style="max-width: 12px; max-height: 24px; color: red;">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <div class="row" style="text-align: right;">                                         
+                                        <div class="col s12"  >     
+                                            <strong>Total Invoice Amount: </strong> <h:outputText id="totl_amount"  value="#{outstandingEntryForm.netTotal}"  style="color: black; font-size: 15px; font-weight: bold;" /><br/>
+                                            <strong>Total Outstanding Amount: </strong> <h:outputText id="totl_outstanding"  value="#{outstandingEntryForm.netOutstanding}"  style="color: black; font-size: 15px; font-weight: bold;" />
+                                    </div>
+                                </div>
+
+                            </h:form>
+
+                            <br/>
+                            <h:form id="orderFormTwo">
+
+                                <p:growl id="msgs_1" autoUpdate="true" showDetail="true"/>
+                                <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="invoice_no" value="#{outstandingEntryForm.invoiceNo}" required="true" requiredMessage="Invoice Number field is required."></p:inputText>
+                                        <p:message for="invoice_no" style="color:red" />
+                                        <label>Invoice Number</label>
+                                    </h:panelGroup>
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="date" value="#{outstandingEntryForm.datebject}" pattern="yyyy-MM-dd" mask="true" required="true" requiredMessage="Date field is required.">
+                                            <p:ajax event="dateSelect" listener="#{outstandingEntryForm.onDateSelect}"  />
+                                        </p:calendar>
+                                        <p:message for="date" style="color:red" />
+                                        <label>Date</label>
+                                    </h:panelGroup>        
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="invoice_total"  value="#{outstandingEntryForm.invoiceTotal}" required="true" requiredMessage="Invoice Total field is required." styleClass="double-only"></p:inputText>
+                                        <p:message for="invoice_total" style="color:red" />
+                                        <label>Invoice Total</label>
+                                    </h:panelGroup>
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:inputText id="outstanding_amount"  value="#{outstandingEntryForm.outstandingAmount}" required="true" requiredMessage="Outstanding Amount field is required." styleClass="double-only"></p:inputText>
+                                        <p:message for="outstanding_amount" style="color:red" />
+                                        <label>Outstanding Amount</label>
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+                                <div style="text-align: right; padding-right: 10px;">
+                                    <p:commandButton value="Add to Table" actionListener="#{outstandingEntryForm.addRow()}" update="orderFormOne orderFormTwo" styleClass="amber-btn " rendered="true" icon="ui-icon-add-circle-outline" iconPos="right" style="width:auto;" />
+                                </div>
+                            </h:form>
+
+
+                            <h:form id="orderFormThree">
+                                <p:growl autoUpdate="true" id="msgs" showDetail="true" />
+
+                                <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <p:selectOneMenu id="custom_type" value="#{outstandingEntryForm.gop_gup_type}" style="margin-bottom:10px;" required="true" requiredMessage="Select a Customer Type." valueChangeListener="#{outstandingEntryForm.fireSelection}" >
+                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                        <f:selectItem itemLabel="Corporate" itemValue="1" />
+                                        <f:selectItem itemLabel="Individual" itemValue="2" />
+                                        <f:selectItem itemLabel="Individual Co." itemValue="3" />
+                                        <p:ajax event="valueChange" immediate="true" process="@this" update="customer"/>
+                                    </p:selectOneMenu>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="customer" minQueryLength="3" value="#{outstandingEntryForm.customer}"  required="true" requiredMessage="Customer field is required." completeMethod="#{outstandingEntryForm.completeCustomersList}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{outstandingEntryForm.onCustomerSelect}" update="msgs" />
+                                        </p:autoComplete>
+                                        <p:message for="customer" style="color:red" />
+                                        <label>Customer</label>
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+                                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                    <p:commandButton value="Save" styleClass="cyan-btn" actionListener="#{outstandingEntryForm.Save}" update="orderFormOne orderFormTwo orderFormThree">
+                                        <!--<f:ajax execute="@form" render="@form" />-->
+                                    </p:commandButton>  
+                                </p:panelGrid>
+
+                            </h:form>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

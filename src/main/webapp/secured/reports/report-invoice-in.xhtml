@@ -1,0 +1,448 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+
+            .layout-compact .ui-datatable tbody tr.ui-widget-content td {
+                padding: 3px 10px !important;
+            }
+
+            .ui-datatable thead tr th {
+                /*border: none !important;*/
+                font-size: 12px !important;
+            }
+            .ui-datatable tbody tr td {
+                /*border: none !important;*/
+                /*background: none !important;*/
+                font-size: 12px !important;
+                padding: 3px 10px !important;
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+            .ui-panelgrid .ui-panelgrid-cell {
+                padding: 4px 6px !important;
+            }
+
+
+        </style>
+        <h:outputStylesheet name="css/print-with-border.css" library="ultima-layout" />
+        <link href="https://fonts.googleapis.com/css?family=Stardos+Stencil" rel="stylesheet" />
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>LIST OF INVOICE - INDIVIDUAL</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/reports/report-invoice" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/reports/report-invoice-in" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                    </p:tabMenu>
+                    <br/>
+
+                    <h:form id="form">
+                        <p:growl autoUpdate="true" id="msgs" showDetail="true"/>
+                        <div class="ui-g">
+                            <div class="ui-g-12">
+
+                                <p:panelGrid columns="6" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <p:selectOneMenu id="custom_type" value="#{reportInvoice.gop_gup_type}" style="margin-bottom:10px;"  valueChangeListener="#{reportInvoice.customerTypeSelection}" >
+                                        <f:selectItem itemLabel="Select One" itemValue="0" />
+                                        <f:selectItem itemLabel="Individual" itemValue="2" />
+                                        <f:selectItem itemLabel="Individual Co." itemValue="3" />
+                                        <p:ajax event="valueChange" immediate="true"  update="customer"/>
+                                    </p:selectOneMenu>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="customer" minQueryLength="3" value="#{reportInvoice.customer}" completeMethod="#{reportInvoice.customerAutoComplete}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{reportInvoice.onItemSelect}" update="msgs" />
+                                        </p:autoComplete>
+                                        <h:message for="customer" style="color:red" />
+                                        <label>Customer</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="date_from" value="#{reportInvoice.date_from}"  pattern="yyyy-MM-dd" mask="true" >
+                                        </p:calendar> 
+                                        <label>Date From</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="date_to" value="#{reportInvoice.date_to}"  pattern="yyyy-MM-dd" mask="true"  >
+                                        </p:calendar> 
+                                        <label>Date To</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:commandButton value="Search"  actionListener="#{reportInvoice.searchActionInd()}" icon="ui-icon-search" iconPos="right" update="form" rendered="true" style="width:auto">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+
+                                <p:dataTable var="inv" value="#{reportInvoice.voucherList}" selectionMode="single" reflow="true"
+                                             selection="#{reportInvoice.selectedVoucher}" rowKey="#{inv.id}" paginator="true" rows="10" lazy="true">
+                                    <!--                                            <f:facet name="header">
+                                                                                    Single with Row Click
+                                                                                </f:facet>-->
+                                    <p:column headerText="Id" sortBy="#{inv.id}" style="text-align: center; width: 8%;">
+                                        <h:outputText value="#{inv.id}" />
+                                    </p:column>
+
+                                    <p:column headerText="Date" sortBy="#{inv.date}" style="text-align: center; width: 10%;">
+                                        <h:outputText value="#{inv.date}" />
+                                    </p:column>
+
+                                    <p:column headerText="Customer" sortBy="#{inv.customer}" style="text-align: left; width: 40%;">
+                                        <h:outputText value="#{inv.customer}" />
+                                    </p:column>
+
+                                    <p:column headerText="Invoice Total" sortBy="#{inv.voucherTotal}" style="text-align: right; width: 12%;">
+                                        <h:outputText value="#{inv.voucherTotal}" />
+                                    </p:column>
+
+                                    <p:column headerText="Due Amount" sortBy="#{inv.due}" style="text-align: right; width: 12%;">
+                                        <h:outputText value="#{inv.due}" />
+                                    </p:column>
+
+                                    <p:column headerText=""  style="width: 6%;">
+                                        <p:commandButton value="" type="button" onclick="PF('dlg1').show();" icon="ui-icon-remove-red-eye" styleClass="amber-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportInvoice.printAction(inv)}" update="invoiceView" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <p:column headerText="" style="width: 6%;">
+                                        <p:commandButton value="" type="button" icon="ui-icon-print" styleClass="cyan-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportInvoice.printAction(inv)}" update="invoicePrint" />
+                                            <p:printer target="invoicePrint" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <p:column headerText="" style="width: 6%; ">
+                                        <p:commandButton value="" type="button" icon="ui-icon-close" styleClass="red-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportInvoice.deleteAction(inv)}" update="form" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <div  style="float: right; text-align: right;  margin-top: 10px;">
+
+                                    <p:panelGrid columns="2" style="text-align: right;">
+
+                                        <h:outputText value="Invoice Total" />
+                                        <h:outputText value="#{reportInvoice.total}" />
+
+                                        <h:outputText value="Due Total" />
+                                        <h:outputText value="#{reportInvoice.due}" />
+
+
+                                    </p:panelGrid>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </h:form>
+
+                    <h:form>
+                        <p:remoteCommand name="onload" action="#{reportInvoice.searchActionIndByDefaultDate()}" update="form"/>
+                    </h:form>
+
+                    <p:dialog header="Invoice Preview" id="model_1" widgetVar="dlg1" modal="true" height="580" width="900" responsive="true">
+
+                        <h:form id="invoiceView">
+                            <p:growl autoUpdate="true" />
+
+                            <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                <h:panelGroup>
+                                    <label>Customer Name: #{invoicePrint.customerName}</label><br/>
+                                    <label>Customer Address: #{invoicePrint.customerAddress}</label><br/>
+                                    <label>#{invoicePrint.vatNo}</label>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                        <h:panelGroup></h:panelGroup>
+                                        <h:panelGroup>
+                                            <label>Date: #{invoicePrint.invoiceDate}</label><br/>
+                                            <label>Invoice No: #{invoicePrint.invoiceNo}</label><br/>
+                                            <label>Order No: #{invoicePrint.orderNo}</label><br/>
+                                            <label>PO No: #{invoicePrint.poNo}</label><br/>
+                                            <label>DN No: #{invoicePrint.dnNo}</label>
+                                        </h:panelGroup>
+                                    </p:panelGrid>
+                                </h:panelGroup>
+                            </p:panelGrid>
+
+
+                            <p:dataTable id="viewTable" styleClass="viewTable" var="in" sortBy="#{invoicePrint.invoiceTotal}" value="#{invoicePrint.invoiceItemList}"  style="margin-bottom:20px">
+
+                                <p:column  headerText="Item Name" style="text-align: left;">
+                                    #{in.productName}
+                                    <p:outputLabel rendered="#{(in.productName eq '')}" value="-"/>
+                                </p:column>
+
+                                <p:column  headerText="Quantity" style="text-align: center;">
+                                    #{in.qty}
+                                </p:column>
+
+                                <p:column  headerText="Unit Price" style="text-align: right;">
+                                    #{in.price}
+                                </p:column>
+
+                                <p:column  headerText="Line Total" style="text-align: right;">
+                                    #{in.tine_total} #{in.line_total_decimal}
+                                </p:column>
+
+                                <!--                                <p:summaryRow>
+                                
+                                                                    <p:column colspan="3" style="text-align:right; ">
+                                                                        <h:outputText value="Total:" />
+                                                                    </p:column>
+                                                                    <p:column style="text-align: right; ">
+                                                                        <h:outputText value="#{invoicePrint.invoiceTotal}">
+                                                                            <f:convertNumber type="currency" currencySymbol="R" />
+                                                                        </h:outputText>
+                                                                    </p:column>
+                                
+                                                                </p:summaryRow>-->
+
+                            </p:dataTable>
+
+                            <div class="ui-g" >
+                                <div class="ui-g-12" >
+                                    <div  style="float: right; text-align: right; ">
+
+                                        <p:panelGrid columns="2" style="text-align: right;">
+
+                                            <h:outputText value="Gross Value" />
+                                            <h:outputText value="#{invoicePrint.invoiceTotal}.#{invoicePrint.invoiceTotalDes}" />
+
+                                            <h:outputText value="Advance" />
+                                            <h:outputText value="#{(invoicePrint.invoicePaid)}" />
+
+                                            <h:outputText value="Balance" />
+                                            <h:outputText value="#{invoicePrint.invoiceDue}" />
+
+                                        </p:panelGrid>
+
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+
+                            <!--                            <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                            
+                                                            <h:panelGroup >                                        
+                                                                <label>Invoice Total: </label><h:outputText id="invoiceTotal" value=""/>
+                                                            </h:panelGroup>  
+                                                            <h:panelGroup >                                        
+                                                                <label>Total Paid: </label><h:outputText id="advance" value=""/>
+                                                            </h:panelGroup>      
+                                                            <h:panelGroup >                                        
+                                                                <label>Due Amount: </label><h:outputText id="balance" value=""/>
+                                                            </h:panelGroup>  
+                            
+                                                        </p:panelGrid>-->
+
+
+
+                        </h:form>
+                    </p:dialog>   
+
+
+                    <p:dialog header="Invoice Preview" id="model_2" widgetVar="dlg2" modal="true" height="400" width="800" responsive="true" >
+
+                        <h:form id="invoicePrint">
+                            <p:growl autoUpdate="true" />
+
+                            <!--                            <div class="ui-g" style="margin-top: 0px;">
+                                                            <div class="ui-g-3">
+                                                                <img src="http://178.238.234.42/billing-system-1.0/javax.faces.resource/Leeds-Logo.jpg.xhtml?ln=images" style="max-width: 170px;"/>
+                                                            </div>
+                                                            <div class="ui-g-9" style="margin-top: 20px;" >
+                            
+                                                                <h1 style="font-family: 'Stardos Stencil', cursive;">Leeds Graphics (PVT) Ltd.</h1>
+                                                                <p style="text-align: center; max-width: 380px;">No. 356E, Pannipitiya Road, Thalawathugoda.<br/>
+                                                                    Tel: 4-301616/2796151 Fax: 4301616<br/>
+                                                                    E-mail: leedsgraphics@yahoo.com</p>
+                                                            </div>
+                                                        </div>-->
+
+                            <div class="ui-g" style="margin-top: 0px;">
+                                <div class="ui-g-3">
+                                    <img src="../../resources/images/#{loginBean.company_logo}" style="max-width: 170px; padding-top: 20px;"/>
+                                </div>
+                                <div class="ui-g-9" style="margin-top: 20px;" >
+
+                                    <h1 style="font-family: 'Stardos Stencil', cursive;">#{loginBean.company_name}</h1>
+                                    <p style="text-align: center; max-width: 380px;">  #{loginBean.company_add1}, #{loginBean.company_add2}, #{loginBean.company_add3}<br/>
+                                        Tel: #{loginBean.company_phone} Fax: #{loginBean.company_fax}<br/>
+                                        E-mail: #{loginBean.company_email}</p>
+                                </div>
+                            </div>
+
+                            <div style="text-align: center;"><span style="line-height: 40px; font-size: 27px; font-style: italic;">INVOICE</span></div>
+
+                            <div class="ui-g" >
+                                <div class="ui-g-8" style=" font-size: 14px; padding-left: 30px;">
+                                    <h4>Customer Details</h4>
+                                    <label>Name: #{invoicePrint.customerName}</label><br/>
+                                    <label>Address: #{invoicePrint.customerAddress}, #{invoicePrint.customerCity}</label><br/>
+                                    <label>#{invoicePrint.vatNo}</label>
+                                </div>
+                                <div class="ui-g-4" style=" font-size: 14px; margin-top: 3px; line-height: 20px; ">
+                                    <label>Date: #{invoicePrint.invoiceDate}</label><br/>
+                                    <label>Invoice: #{invoicePrint.invoiceNo}</label><br/>                                      
+                                    <label>D.N. No: #{invoicePrint.dnNo}</label><br/>
+                                    <label>P.O No: #{invoicePrint.poNo}</label><br/>
+                                    <label>Order No: #{invoicePrint.orderNo}</label>        
+                                </div>
+                            </div>
+
+                            <p:dataTable id="printTable"  var="in" value="#{invoicePrint.invoiceItemList}" sortBy="#{invoicePrint.invoiceTotal}" style="padding-left: 25px; max-width: 670px; margin-bottom:10px; margin-top: 5px; ">
+
+                                <p:column headerText="Quantity" style="text-align: center; width: 50px; ">
+                                    #{in.qty}
+                                </p:column>
+
+                                <p:column headerText="Description" style="text-align: left; width: 325px;">
+                                    #{in.productName}
+                                </p:column>
+
+                                <p:column headerText="Price" style="text-align: center; width: 45px; ">
+                                    #{in.price}
+                                </p:column>
+
+                                <p:column headerText="Line Total" style="text-align: right; width: 120px; ">
+                                    #{in.tine_total}.#{in.line_total_decimal}
+                                </p:column>
+
+
+
+                            </p:dataTable>
+
+
+
+                            <!--                            <div class="ui-g" style="margin-top: 0px;">
+                                                            <div class="ui-g-7" style=" font-size: 14px;  line-height: 34px;  padding-left: 40px; color: black;">
+                            
+                                                            </div>
+                                                            <div class="ui-g-2">
+                                                                <div><p:outputLabel value="2%" rendered="#{(invoicePrint.vatNum != '')}" /></div>
+                                                                <div style="padding-top: 37px;"> <p:outputLabel value="15%" rendered="#{(invoicePrint.vatNum != '')}" /></div>
+                                                            </div>
+                                                            <div class="ui-g-3" style=" font-size: 13px; text-align: right; padding-right: 53px;">
+                                                                <p:outputLabel rendered="#{((invoicePrint.nbtNum ne ''))}">NBT: #{invoicePrint.nbtNum}.#{invoicePrint.nbtDes}</p:outputLabel><br/>
+                                                                <p:outputLabel rendered="#{((invoicePrint.vatNum ne ''))}">Gross: #{invoicePrint.grossNum}.#{invoicePrint.grossDes}</p:outputLabel><br/>
+                                                                <p:outputLabel rendered="#{((invoicePrint.vatNum ne ''))}">VAT: #{invoicePrint.nbtNum}.#{invoicePrint.vatDes}</p:outputLabel><br/>
+                                                                <div style="padding-top: 2px;">Total: #{invoicePrint.invoiceTotal}.#{invoicePrint.invoiceTotalDes}</div>
+                                                            </div>
+                                                        </div>-->
+
+                            <div class="ui-g" >
+                                <div class="ui-g-12" >
+                                    <div  style="float: right; text-align: right; margin-right: 37px;">
+
+                                        <p:panelGrid columns="2" style="text-align: right;">
+
+                                            <h:outputText value="Gross Value" />
+                                            <h:outputText value="#{invoicePrint.invoiceTotal}.#{invoicePrint.invoiceTotalDes}" />
+
+                                            <h:outputText value="Advance" />
+                                            <h:outputText value="#{(invoicePrint.invoicePaid)}" />
+
+                                            <h:outputText value="Balance" />
+                                            <h:outputText value="#{invoicePrint.invoiceDue}" />
+
+                                        </p:panelGrid>
+
+                                    </div>
+
+                                    <div style="margin-top: 10px; float: left; margin-left: 25px;">
+
+                                        <p>Above goods received in good condition.</p>
+
+                                    </div>
+
+                                    <div style="margin-top: 10px; float: none; margin-top: 100px;">
+                                        <div class="ui-g-4" style="line-height: 10px; text-align: center; margin-top: 20px; ">
+                                            <p>...................................</p>
+                                            <p>Signature</p>
+                                        </div>
+                                        <div class="ui-g-4" style="line-height: 10px; text-align: center; margin-top: 20px; ">
+
+                                        </div>
+                                        <div class="ui-g-4" style="line-height: 10px; text-align: center; margin-top: 20px; ">
+                                            <p>...................................</p>
+                                            <p>Authorized By</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </h:form>
+                    </p:dialog>  
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

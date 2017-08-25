@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"   
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head>
+        <!--Import Google Icon Font-->
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css"/>
+
+        <!--Import jQuery before materialize.js-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+
+        <h:outputStylesheet library="css" name="custom.css"/>
+        <h:outputStylesheet library="css" name="sweetalert.css"/>
+        <h:outputScript library="js" name="sweetalert.min.js"/>
+        <h:outputScript library="js" name="custom.js"/>
+
+        <link rel="shortcut icon" type="image/x-icon" href="../resources/images/favicon/exon-favicon-ii.png"/>
+        <title>Customer Registration Corporate | Exon Billing System</title>
+    </h:head>
+
+    <h:body styleClass="cyan lighten-5">
+
+        <header>
+            <ui:include src="/secured/header.xhtml" />
+        </header>
+
+        <div class="preloader-background cyan lighten-5">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer ">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div><div class="gap-patch">
+                        <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <main class="container valign-wrapper">
+
+            <!--<div class="container">-->
+            <div class="center_align full-width">
+                <div class="row">
+                    <div class="col s12 ">
+                        <!--<div class="container">-->
+
+
+                        <div class="card">
+                            <div class="card-header light-blue lighten-2">
+                                <div class="card-title" >
+                                    <h5 class="flight-card-title thin " style="text-transform: uppercase; font-size: 36px;">Entry Forms</h5>
+                                </div>
+                            </div>
+
+                            <div class="card-content">
+
+                                <div class="row center ">
+                                    <div class="col s12 xl4"><a href="customer-registration-corporate.xhtml" class="waves-effect waves-light btn-large pink lighten-2" style="width: 300px; "><i class="material-icons left">perm_identity</i>Corporate Customer</a> </div>
+                                    <div class="col s12 xl4"><a href="customer-registration-individual.xhtml" class="waves-effect waves-light btn-large pink lighten-2" style="width: 300px; "><i class="material-icons left">perm_identity</i>Individual Customer</a> </div>
+                                    <div class="col s12 xl4"><a class="waves-effect waves-light btn-large " style="width: 300px; background: #ff5a92; "><i class="material-icons left">library_books</i> Request Individual</a></div>                            
+                                </div>
+                                <div class="row center ">
+                                    <div class="col s12 xl4 "><a href="order-request-corporate.xhtml" class="waves-effect waves-light btn-large pink lighten-2" style="width: 300px;background: #ff5a92;"><i class="material-icons left">library_books</i> Request Corporate</a></div>
+                                    <div class="col s12 xl4 "><a class="waves-effect waves-light btn-large pink lighten-2" style="width: 300px; "><i class="material-icons left">view_headline</i>Invoice Individual</a></div>
+                                    <div class="col s12 xl4"><a href="corporate-invoice.xhtml" class="waves-effect waves-light btn-large pink lighten-2" style="width: 300px; "><i class="material-icons left">view_headline</i>Invoice Corporate</a> </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!--<div class="row center divider orange"></div>-->
+                        <br/>
+                        <div class="card">
+                            <div class="card-header teal teal accent-4">
+                                <div class="card-title">
+                                    <h5 class="flight-card-title thin " style="text-transform: uppercase; font-size: 36px;">Analytical Reports</h5>
+                                </div>
+                            </div>
+
+                            <div class="card-content">
+                                <div class="row center ">                    
+                                    <div class="col s12 xl4 "><a class="waves-effect waves-light btn-large orange accent-2" style="width: 300px;"><i class="material-icons left">list</i>List of Customer</a></div>
+                                    <div class="col s12 xl4"><a class="waves-effect waves-light btn-large orange accent-2" style="width: 300px;"><i class="material-icons left">list</i>List of Order Request</a></div>
+                                    <div class="col s12 xl4"><a class="waves-effect waves-light btn-large orange accent-2" style="width: 300px;"><i class="material-icons left">list</i>List of Invoice</a></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--</div>-->
+
+
+        </main>
+
+        <footer class="page-footer">
+            <ui:include src="/secured/footer.xhtml" />
+        </footer>
+
+
+
+    </h:body>
+
+
+</html>
+

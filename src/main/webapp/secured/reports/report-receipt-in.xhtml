@@ -1,0 +1,448 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+
+            .layout-compact .ui-datatable tbody tr.ui-widget-content td {
+                padding: 3px 10px !important;
+            }
+
+            .ui-datatable thead tr th {
+                /*border: none !important;*/
+                font-size: 12px !important;
+            }
+            .ui-datatable tbody tr td {
+                /*border: none !important;*/
+                /*background: none !important;*/
+                font-size: 12px !important;
+                padding: 3px 10px !important;
+            }
+
+            .ui-widget-content {
+                border: none !important;
+            }
+
+            .ui-panel .ui-panel-content {
+                padding: 8px 0px !important;
+            }
+
+            
+             .ui-panelgrid .ui-panelgrid-cell {
+                padding: 4px 6px !important;
+            }
+        </style>
+        <h:outputStylesheet name="css/print-with-border.css" library="ultima-layout" />
+        <link href="https://fonts.googleapis.com/css?family=Stardos+Stencil" rel="stylesheet" />
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>LIST OF RECEIPT - INDIVIDUAL</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/reports/report-receipt" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/reports/report-receipt-in" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                    </p:tabMenu>
+                    <br/>
+
+                    <h:form id="form">
+                        <p:growl autoUpdate="true" id="msgs" showDetail="true"/>
+                        <div class="ui-g">
+                            <div class="ui-g-12">
+
+                                <p:panelGrid columns="6" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <p:selectOneMenu id="custom_type" value="#{reportReceipt.gop_gup_type}" style="margin-bottom:10px;"  valueChangeListener="#{reportReceipt.customerTypeSelection}" >
+                                        <f:selectItem itemLabel="Select One" itemValue="0" />
+                                        <f:selectItem itemLabel="Individual" itemValue="2" />
+                                        <f:selectItem itemLabel="Individual Co." itemValue="3" />
+                                        <p:ajax event="valueChange" immediate="true" process="@this" update="customer"/>
+                                    </p:selectOneMenu>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="customer" minQueryLength="3" value="#{reportReceipt.customer}" completeMethod="#{reportReceipt.customerAutoComplete}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{reportReceipt.onItemSelect}" update="msgs" />
+                                        </p:autoComplete>
+                                        <h:message for="customer" style="color:red" />
+                                        <label>Customer</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="date_from" value="#{reportReceipt.date_from}"  pattern="yyyy-MM-dd" mask="true" >
+                                        </p:calendar> 
+                                        <label>Date From</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:calendar id="date_to" value="#{reportReceipt.date_to}"  pattern="yyyy-MM-dd" mask="true"  >
+                                        </p:calendar> 
+                                        <label>Date To</label>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:commandButton value="Search"  actionListener="#{reportReceipt.searchActionInd()}" icon="ui-icon-search" iconPos="right" update="form" rendered="true" style="width:auto">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+
+                                <p:dataTable id="receiptTbl" var="inv" value="#{reportReceipt.voucherList}" selectionMode="single" reflow="true"
+                                             selection="#{reportReceipt.selectedVoucher}" rowKey="#{inv.id}" paginator="true" rows="10" lazy="true">
+                                    <!--                                            <f:facet name="header">
+                                                                                    Single with Row Click
+                                                                                </f:facet>-->
+                                    <p:column headerText="Id" sortBy="#{inv.id}" style="text-align: center; width: 8%;">
+                                        <h:outputText value="#{inv.id}" />
+                                    </p:column>
+
+                                    <p:column headerText="Date" sortBy="#{inv.date}" style="text-align: center; width: 10%;">
+                                        <h:outputText value="#{inv.date}" />
+                                    </p:column>
+
+                                    <p:column headerText="Customer" sortBy="#{inv.customer}" style="text-align: left; width: 40%;">
+                                        <h:outputText value="#{inv.customer}" />
+                                    </p:column>
+
+                                    <p:column headerText="Receipt Amount" sortBy="#{inv.voucherTotal}" style="text-align: right; width: 12%;">
+                                        <h:outputText value="#{inv.voucherTotal}" />
+                                    </p:column>
+
+<!--                                    <p:column headerText="Due Amount" sortBy="#{inv.due}" style="text-align: right; width: 12%;">
+                                        <h:outputText value="#{inv.due}" />
+                                    </p:column>-->
+
+                                    <p:column headerText=""  style="width: 6%;">
+                                        <p:commandButton value="" type="button" onclick="PF('dlg1').show();" icon="ui-icon-remove-red-eye" styleClass="amber-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportReceipt.printAction(inv)}" update="invoiceView" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <p:column headerText="" style="width: 6%;">
+                                        <p:commandButton value="" type="button" icon="ui-icon-print" styleClass="cyan-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportReceipt.printAction(inv)}" update="receiptPrint" />
+                                            <p:printer target="receiptPrint" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                    <p:column headerText="" style="width: 6%; ">
+                                        <p:commandButton value="" type="button" icon="ui-icon-close" styleClass="red-btn" style="padding-left:5px; width: 40px;">
+                                            <p:ajax listener="#{reportReceipt.deleteAction(inv)}" update="receiptTbl" />
+                                        </p:commandButton>
+                                    </p:column>
+
+                                </p:dataTable>
+
+                                <div style="float: right; text-align: right;  margin-top: 10px;">
+
+                                    <p:panelGrid columns="2" style="text-align: right;">
+
+                                        <h:outputText value="Receipt Total" />
+                                        <h:outputText value="#{reportReceipt.total}" />
+
+                                        <h:outputText value="Due Total" />
+                                        <h:outputText value="#{reportReceipt.due}" />
+
+
+                                    </p:panelGrid>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </h:form>
+
+                    <h:form>
+                        <p:remoteCommand name="onload" action="#{reportReceipt.searchActionIndByDefaultDate()}" update="form"/>
+                    </h:form>
+
+                    <p:dialog header="Invoice Preview" id="model_1" widgetVar="dlg1" modal="true" height="430" width="900" responsive="true">
+
+                        <h:form id="invoiceView">
+                            <p:growl autoUpdate="true" />
+
+
+                            <!--                            <div style="text-align: center;"><span style="line-height: 40px; font-size: 27px; font-weight: bold;">RECEIPT</span></div>
+                            
+                                                        <div class="ui-g">
+                                                            <div class="ui-g-7">
+                                                                <h3>Invoice Details</h3>
+                                                            </div>
+                                                            <div class="ui-g-2"></div>
+                                                            <div class="ui-g-3" style="text-align: center;">
+                                                                <h3>Payment History</h3>
+                                                            </div>
+                                                        </div>-->
+
+                            <div class="ui-g">
+                                <div class="ui-g-7">
+
+                                    <div class="ui-g" style="font-size: 12px;">
+                                        <div class="ui-g-7" >
+                                            <h3>Customer Details</h3>
+                                            <label> Name: #{invoicePrint.customerName}</label><br/>
+                                            <label> Address: #{invoicePrint.customerAddress}, #{invoicePrint.customerCity}</label><br/>
+                                        </div>
+                                        <div class="ui-g-5">
+                                            <label>Date: #{invoicePrint.invoiceDate}</label><br/>
+                                            <label>Invoice No: #{invoicePrint.invoiceNo}</label><br/>
+                                            <label>Order No: #{invoicePrint.orderNo}</label><br/>
+                                            <label>PO No: #{invoicePrint.poNo}</label><br/>
+                                            <label>DN No: #{invoicePrint.dnNo}</label>
+                                        </div>
+                                    </div>
+
+                                    <hr/>
+
+                                    <div class="ui-g">
+
+                                        <div class="ui-g-6">
+
+                                            <h3 style="font-size: 15px;">This Receipt Details</h3>
+
+                                            <div class="ui-g" style="font-size: 12px;">
+                                                <div class="ui-g-12">
+                                                    <label>No: #{invoicePrint.receiptNo}</label><br/>
+                                                    <label>Date: #{invoicePrint.receiptDate}</label><br/>
+
+                                                    <label>Payment Mode: #{invoicePrint.receiptPaymentMode}</label><br/>
+                                                    <label>Amount: #{invoicePrint.receiptAmount}</label><br/>
+                                                    <p:panel rendered="#{invoicePrint.receiptPaymentMode eq 'Cheque'}" >
+                                                        <p:outputLabel value="Cheque No: #{invoicePrint.receiptChequeNumber}" style="font-size: 12px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Cheque Date: #{invoicePrint.receiptChequeDate}" style="font-size: 12px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Cheque Controller: #{invoicePrint.receiptChequeController}" style="font-size: 12px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Bank: #{invoicePrint.receiptChequeBank}" style="font-size: 12px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Bank Branch: #{invoicePrint.receiptChequeBankBranch}" style="font-size: 12px;"></p:outputLabel>
+                                                    </p:panel>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="ui-g-6" style="text-align: right;">
+
+                                            <h3 style="font-size: 15px;">Payment Summary</h3>
+
+                                            <div class="ui-g" >
+                                                <div class="ui-g-12">
+
+                                                    <div class="ui-g" style="font-size: 12px; text-align: right; font-weight: bold;">
+                                                        <div class="ui-g-12">
+                                                            <label>Invoice Total: #{invoicePrint.invoiceTotal}</label><br/>
+                                                            <label>Total Paid: #{(invoicePrint.invoicePaid)}</label><br/>
+                                                            <label>Due Amount: #{invoicePrint.invoiceDue}</label><br/>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="ui-g-5" >
+                                    <p:dataTable styleClass="payment-history" var="re" value="#{invoicePrint.phs}" >
+
+                                        <p:column headerText="No" style="font-size: 10px; height: 20px;">
+                                            #{re.id}
+                                        </p:column>
+
+                                        <p:column headerText="Date" style="font-size: 10px; height: 20px; text-align: center;">
+                                            #{re.date}
+                                        </p:column>
+
+                                        <p:column headerText="Amount" style="font-size: 10px; height: 20px; text-align: right;">
+                                            #{re.amount}
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+                            </div>
+
+
+                        </h:form>
+                    </p:dialog>   
+
+
+                    <p:dialog header="Invoice Preview" id="model_2" widgetVar="dlg2" modal="true" height="400" width="800" responsive="true" >
+
+                        <h:form id="receiptPrint">
+                            <p:growl autoUpdate="true" />
+
+                            <div class="ui-g" style="margin-top: 0px;">
+                                <div class="ui-g-3">
+                                    <img src="http://178.238.234.42/billing-system-1.0/javax.faces.resource/Leeds-Logo.jpg.xhtml?ln=images" style="max-width: 170px;"/>
+                                </div>
+                                <div class="ui-g-6" style="padding-top: 0px; font-size: 13px;" >
+                                    <h1 style="font-family: 'Stardos Stencil', cursive; line-height: 13px;">Leeds Graphics (PVT) Ltd.</h1>
+                                    <p style="line-height: 14px;">No. 356E, Pannipitiya Road, Thalawathugoda.<br/>
+                                        Tel: 4-301616/2796151 Fax: 4301616<br/>
+                                        E-mail: leedsgraphics@yahoo.com</p>
+                                </div>
+                                <div class="ui-g-3">
+                                    <div style="text-align: center;"><span style="line-height: 40px; font-size: 27px; font-weight: bold; padding-top: 0px;">RECEIPT</span></div>
+                                </div>
+                            </div>
+
+                            <!--                            <div class="ui-g">
+                                                            <div class="ui-g-7">
+                                                                <h3>Invoice Details</h3>
+                                                            </div>
+                                                            <div class="ui-g-2"></div>
+                                                            <div class="ui-g-3" style="text-align: center;">
+                                                                <h3>Payment History</h3>
+                                                            </div>
+                                                        </div>-->
+
+                            <div class="ui-g">
+                                <div class="ui-g-7">
+
+                                    <div class="ui-g" style="font-size: 12px; line-height: 13px;">
+                                        <div class="ui-g-7" >
+                                            <label style="font-size: 13px; line-height: 13px; ">Customer Details</label><br/>
+                                            <div style="height: 10px;"></div>
+                                            <label> Name: #{invoicePrint.customerName}</label><br/>
+                                            <label> Address: #{invoicePrint.customerAddress}, #{invoicePrint.customerCity}</label>
+                                        </div>
+                                        <div class="ui-g-5">
+                                            <label>Date: #{invoicePrint.invoiceDate}</label><br/>
+                                            <label>Invoice No: #{invoicePrint.invoiceNo}</label><br/>
+                                            <label>Order No: #{invoicePrint.orderNo}</label><br/>
+                                            <label>PO No: #{invoicePrint.poNo}</label><br/>
+                                            <label>DN No: #{invoicePrint.dnNo}</label>
+                                        </div>
+                                    </div>
+
+                                    <hr/>
+
+                                    <div class="ui-g">
+
+                                        <div class="ui-g-6">
+
+                                            <lable style="font-size: 15px;">This Receipt Details</lable>
+
+                                            <div class="ui-g" style="font-size: 12px; line-height: 13px; padding-left: 0px;">
+                                                <div class="ui-g-12">
+                                                    <label>No: #{invoicePrint.receiptNo}</label><br/>
+                                                    <label>Date: #{invoicePrint.receiptDate}</label><br/>
+                                                    <label>Payment Mode: #{invoicePrint.receiptPaymentMode}</label><br/>
+                                                    <label>Amount: #{invoicePrint.receiptAmount}</label><br/>
+                                                    <p:panel rendered="#{invoicePrint.receiptPaymentMode eq 'Cheque'}" >
+                                                        <p:outputLabel value="Cheque No: #{invoicePrint.receiptChequeNumber}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Cheque Date: #{invoicePrint.receiptChequeDate}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Cheque Controller: #{invoicePrint.receiptChequeController}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Bank: #{invoicePrint.receiptChequeBank}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                        <p:outputLabel value="Bank Branch: #{invoicePrint.receiptChequeBankBranch}" style="font-size: 12px; line-height: 13px;"></p:outputLabel>
+                                                    </p:panel>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="ui-g-6" style="text-align: right;">
+
+                                            <lable style="font-size: 15px; padding-right: 16px;">Payment Summary</lable>
+
+                                            <div class="ui-g" >
+                                                <div class="ui-g-12">
+
+                                                    <div class="ui-g" style="font-size: 13px; line-height: 15px; text-align: right; font-weight: bold;">
+                                                        <div class="ui-g-12">
+                                                            <label>Invoice Total: #{invoicePrint.invoiceTotal}</label><br/>
+                                                            <label>Total Paid: #{(invoicePrint.invoicePaid)}</label><br/>
+                                                            <label>Due Amount: #{invoicePrint.invoiceDue}</label><br/>
+                                                        </div>
+                                                    </div>
+
+                                                    <div  style="line-height: 10px; text-align: center; margin-top: 40px; ">
+                                                        <p>...................................</p>
+                                                        <p>Signature</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="ui-g-5" >
+                                    <p:dataTable styleClass="payment-history" var="re" value="#{invoicePrint.phs}" >
+
+                                        <p:column headerText="No" style="font-size: 10px; height: 20px;">
+                                            #{re.id}
+                                        </p:column>
+
+                                        <p:column headerText="Date" style="font-size: 10px; height: 20px; text-align: center;">
+                                            #{re.date}
+                                        </p:column>
+
+                                        <p:column headerText="Amount" style="font-size: 10px; height: 20px; text-align: right;">
+                                            #{re.amount}
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+                            </div>
+
+
+
+                        </h:form>
+                    </p:dialog>  
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

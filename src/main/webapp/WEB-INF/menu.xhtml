@@ -1,0 +1,102 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:pu="http://primefaces.org/ultima">
+
+    <h:form id="menuform"> 
+        <div class="layout-menu #{guestPreferences.menuClass}">
+            <div class="nano">
+                <div class="nano-content menu-scroll-content">
+                    <ui:fragment rendered="#{guestPreferences.profileMode == 'inline' and guestPreferences.menuLayout != 'menu-layout-static menu-layout-horizontal'}">
+                        <div class="profile">
+                            <div class="profile-image"></div>
+                            <a id="profile-options" href="#">
+                                <span class="profile-name">#{loginBean.profileName}</span>
+                                <i class="material-icons">&#xE313;</i>
+                            </a>
+                        </div>
+
+                        <ul id="profile-menu" class="ultima-menu">
+                            <li role="menuitem">
+                                <a href="#" class="ripplelink">
+                                    <i class="material-icons">&#xE7FD;</i>
+                                    <span>Profile</span>
+                                </a>
+                            </li>
+                            <li role="menuitem">
+                                <a href="../secured/utility/privacy.xhtml" class="ripplelink">
+                                    <i class="material-icons">&#xE32A;</i>
+                                    <span>Privacy</span>
+                                </a>
+                            </li>
+                            <li role="menuitem">
+                                <a href="#" class="ripplelink">
+                                    <i class="material-icons">&#xE8B9;</i>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                            <li role="menuitem">
+                                <h:commandLink action="#{loginBean.doLogout}">
+                                    <i class="material-icons">&#xE8AC;</i>
+                                    <span>Logout</span>
+                                </h:commandLink>
+
+                            </li>
+                        </ul>
+                    </ui:fragment>
+
+                    <pu:menu widgetVar="me">
+                        <p:menuitem id="um_dashboard" value="Dashboard" icon="&#xE871;" outcome="/secured/dashboard"/>
+                        <p:submenu id="task" label="Task" icon="assignment">
+                            <p:menuitem id="customer_registration" value="Customer Registration" icon="description" outcome="/secured/customer-registration" />
+                            <p:menuitem id="outstanding-entry-form" value="Outstanding Entry Form" icon="description" outcome="/secured/outstanding-entry-form" />
+                            <p:menuitem id="order-request" value="Order Request" icon="description" outcome="/secured/order-request" />
+                            <p:menuitem id="receipt" value="Receipt" icon="description" outcome="/secured/receipt" />
+                            <p:menuitem id="credit-note" value="Credit Note" icon="description" outcome="/secured/credit-note" />
+                        </p:submenu>
+                        <p:submenu id="report" label="Reports" icon="equalizer">
+                            <p:menuitem id="report-customer-registration" value="List of Customer" icon="receipt" outcome="/secured/reports/report-customer-registration" />
+                            <p:menuitem id="report-customer-outstanding" value="List of Outstanding" icon="receipt" outcome="/secured/reports/report-customer-outstanding" />
+                            <p:menuitem id="report-order-request" value="List of Order Request" icon="receipt" outcome="/secured/reports/report-order-request" />
+                            <p:menuitem id="report-invoice" value="List of Invoice" icon="receipt" outcome="/secured/reports/report-invoice" />
+                            <p:menuitem id="report-receipt" value="List of Receipt" icon="receipt" outcome="/secured/reports/report-receipt" />
+                        </p:submenu>
+                        <p:submenu id="themes" label="Themes" icon="&#xE40A;">
+                            <p:menuitem id="theme1" value="Indigo - Pink" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('indigo')}" ajax="false" />
+                            <p:menuitem id="theme2" value="Brown - Green" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('brown')}" ajax="false" />
+                            <p:menuitem id="theme3" value="Blue - Amber" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('blue')}" ajax="false" />
+                            <p:menuitem id="theme4" value="Blue Grey - Green" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('blue-grey')}" ajax="false" />
+                            <p:menuitem id="theme5" value="Dark - Blue" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('dark-blue')}" ajax="false" />
+                            <p:menuitem id="theme6" value="Dark - Green" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('dark-green')}" ajax="false" />
+                            <p:menuitem id="theme7" value="Green - Yellow" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('green')}" ajax="false" />
+                            <p:menuitem id="theme8" value="Purple - Cyan" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('purple-cyan')}" ajax="false" />
+                            <p:menuitem id="theme9" value="Purple - Amber" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('purple-amber')}" ajax="false" />
+                            <p:menuitem id="theme10" value="Teal - Lime" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('teal')}" ajax="false" />
+                            <p:menuitem id="theme11" value="Cyan - Amber" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('cyan')}" ajax="false" />
+                            <p:menuitem id="theme12" value="Grey - Deep Orange" icon="&#xE3AE;" actionListener="#{guestPreferences.setTheme('grey')}" ajax="false" />
+                        </p:submenu>
+                        <p:submenu id="um_customization" label="Customization" icon="&#xE8B8;">
+                            <p:menuitem id="custom1" value="Compact Size" icon="&#xE061;" actionListener="#{guestPreferences.setCompact(true)}" ajax="false"/>
+                            <p:menuitem id="custom2" value="Material Size" icon="&#xE062;" actionListener="#{guestPreferences.setCompact(false)}" ajax="false"/>
+                            <p:menuitem id="custom3" value="Static Menu" icon="&#xE5D2;" actionListener="#{guestPreferences.setMenuLayout('static')}" ajax="false"/>
+                            <p:menuitem id="custom4" value="Overlay Menu" icon="&#xE879;" actionListener="#{guestPreferences.setMenuLayout('overlay')}" ajax="false"/>
+                            <p:menuitem id="custom5" value="Horizontal Menu" icon="&#xE22C;" actionListener="#{guestPreferences.setMenuLayout('horizontal')}" ajax="false"/>
+                            <p:menuitem id="custom6" value="Light Menu" icon="&#xE893;" actionListener="#{guestPreferences.setLightMenu}" ajax="false" />
+                            <p:menuitem id="custom7" value="Dark Menu" icon="&#xE892;" actionListener="#{guestPreferences.setDarkMenu}" ajax="false"/>
+                            <p:menuitem id="custom8" value="Inline Profile" icon="&#xE0BA;" actionListener="#{guestPreferences.setProfileMode('inline')}" ajax="false" />
+                            <p:menuitem id="custom9" value="Top Profile" icon="&#xE55A;" actionListener="#{guestPreferences.setProfileMode('overlay')}" ajax="false"/>
+                        </p:submenu>
+                        <p:submenu id="um_orientation" label="Orientation" icon="&#xE237;">
+                            <p:menuitem id="um_ltr" value="LTR" icon="&#xE236;" actionListener="#{guestPreferences.setOrientationRTL(false)}" ajax="false" />
+                            <p:menuitem id="um_rtl" value="RTL" icon="&#xE237;" actionListener="#{guestPreferences.setOrientationRTL(true)}" ajax="false" />
+                        </p:submenu>
+                        
+                    </pu:menu>
+                </div>
+            </div>
+        </div>
+    </h:form>
+</ui:composition>

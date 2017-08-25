@@ -1,0 +1,95 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+
+            .ui-datatable tbody tr.ui-datatable-even.ui-state-highlight {
+                /*background-color:  #ff5a92 !important;*/
+            }
+
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>PRIVACY</h1>
+
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+
+                            <h3>Change Password</h3>
+                            <h:form id="form">
+                                <p:growl id="msgs" autoUpdate="true" showDetail="true"/>
+                                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:password id="current_password"  value="#{privacy.currentPassword}" required="true" requiredMessage="Current Password field is required." />
+                                        <p:message for="current_password" style="color:red" />
+                                        <label>Current Password</label>
+                                    </h:panelGroup>
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:password id="new_password"  value="#{privacy.password}" required="true" requiredMessage="New Password field is required."/>
+                                        <p:message for="new_password" style="color:red" />
+                                        <label>New Password</label>
+                                    </h:panelGroup>
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:password id="confirm_password"  value="#{privacy.confirmPassword}" required="true" requiredMessage="Confirm New Password field is required." />
+                                        <p:message for="confirm_password" style="color:red" />
+                                        <label>Confirm New Password</label>
+                                    </h:panelGroup>
+                                </p:panelGrid>
+                                <div style="text-align: right;">
+                                    <p:commandButton value="Change Password" action="#{privacy.changePassword()}" update="form" styleClass="red-btn " rendered="true" icon="ui-icon-vpn-key" iconPos="right" style="width:auto;" />
+                                </div>
+                            </h:form>
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

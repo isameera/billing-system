@@ -1,0 +1,114 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .nba-grid {
+                width: 100%;
+                table-layout: fixed;
+                word-wrap: break-word;
+            }
+
+            .ui-scrollpanel-content p:first-child {
+                margin: 0;
+            }
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>CUSTOMER REGISTRATION CORPORATE</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/customer-registration" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/customer-registration-in" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                        <p:menuitem value="INDIVIDUAL COMPANY" outcome="/secured/customer-registration-in-co" icon="ui-icon-domain">
+                            <f:param name="i" value="2" />
+                        </p:menuitem>
+                    </p:tabMenu>
+
+
+                    <h:form id="customerRegistration">
+                        <p:growl autoUpdate="true" showDetail="true"/>
+                        <br/>
+
+                        <h2 style="text-align: right; padding-right: 15px; ">CUSTOMER CODE: <h:outputText id="customer_code"  value="#{cusromerRegistrationIndividualCompany.code}" /></h2>
+
+                        <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:autoComplete id="name" minQueryLength="3" required="true" value="#{cusromerRegistrationIndividualCompany.name}" completeMethod="#{cusromerRegistrationIndividualCompany.completeList}" effect="fade" style="width: 100%;" requiredMessage="The name field is required.">
+                                    <p:ajax event="itemSelect" listener="#{cusromerRegistrationIndividualCompany.onItemSelect}" update="customerRegistration" />
+                                </p:autoComplete>                               
+                                <p:message for="name" style="color:red" />
+                                <label>Name</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="no" required="true" value="#{cusromerRegistrationIndividualCompany.no}" requiredMessage="The no field is required."></p:inputText>
+                                <p:message for="no" style="color:red" />
+                                <label>No</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="street" required="true" value="#{cusromerRegistrationIndividualCompany.street}" requiredMessage="The street field is required."></p:inputText>
+                                <p:message for="street" style="color:red" />
+                                <label>Street</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="city" required="true" value="#{cusromerRegistrationIndividualCompany.city}" requiredMessage="The city field is required."></p:inputText>
+                                <p:message for="city" style="color:red" />
+                                <label>City</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="postal_code"  value="#{cusromerRegistrationIndividualCompany.postal_code}" styleClass="numeric-only" requiredMessage="The postal code field is required." ></p:inputText>
+                                <p:message for="postal_code" style="color:red" />
+                                <label>Postal Code</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="phone_i" required="true" value="#{cusromerRegistrationIndividualCompany.phone_i}" maxlength="10" styleClass="numeric-only" requiredMessage="The phone number field is required." validatorMessage="Invalid Phone Number">
+                                    <f:validateRegex pattern="[0-9]+" />
+                                </p:inputText>
+                                <p:message for="phone_i" style="color:red" />
+                                <label>Phone</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="phone_ii"  value="#{cusromerRegistrationIndividualCompany.phone_ii}" styleClass="numeric-only" validatorMessage="Invalid Length"></p:inputText>
+                                <label for="phone_ii">Phone: II</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="fax" value="#{cusromerRegistrationIndividualCompany.fax}" styleClass="numeric-only" validatorMessage="Invalid Length"></p:inputText>
+                                <label for="fax">Fax</label>
+                            </h:panelGroup>
+                            <h:panelGroup styleClass="md-inputfield">
+                                <p:inputText id="email" value="#{cusromerRegistrationIndividualCompany.email}" required="true" requiredMessage="The email address field is required." validatorMessage="Invalid email format">
+                                    <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"  />
+                                </p:inputText>
+                                <p:message for="email" style="color:red" />
+                                <label for="email">Email</label>
+                            </h:panelGroup>
+                        </p:panelGrid>
+                        <p:commandButton value="Submit" styleClass="secondary" action="#{cusromerRegistrationIndividualCompany.SaveCusromerRegistrationIndividualCo}" update="customerRegistration" />
+                    </h:form>
+                    <h:form>
+                        <p:remoteCommand name="onload" action="#{cusromerRegistrationIndividualCompany.getCustumCode}" autoRun="true" update="customerRegistration"/>
+                    </h:form>
+                </div>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

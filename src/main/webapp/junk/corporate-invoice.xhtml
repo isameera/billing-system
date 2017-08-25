@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"   
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <h:head>
+        <!--Import Google Icon Font-->
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+        <!-- Compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css"/>
+
+        <!--Import jQuery before materialize.js-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+
+        <h:outputStylesheet library="css" name="custom.css"/>
+        <h:outputStylesheet library="css" name="sweetalert.css"/>
+        <h:outputScript library="js" name="sweetalert.min.js"/>
+        <h:outputScript library="js" name="custom.js"/>
+
+        <link rel="shortcut icon" type="image/x-icon" href="../resources/images/favicon/exon-favicon-ii.png"/>
+        <title>Corporate Invoice | Exon Billing System</title>
+    </h:head>
+
+    <h:body styleClass="cyan lighten-5">
+
+        <div class="preloader-background cyan lighten-5">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer ">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div><div class="gap-patch">
+                        <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <header>
+            <ui:include src="/secured/header.xhtml" />
+        </header>
+
+        <main class="container valign-wrapper">
+
+
+
+            <!--<div class="container">-->
+            <div class="center_align full-width">
+                <div class="row">
+                    <div class="col s12 ">
+                        <div class="card">
+                            <div class="card-header light-blue">
+                                <div class="card-title">
+                                    <h4 class="flight-card-title">Corporate Invoice</h4>
+                                </div>
+                            </div>
+
+                            <div class="card-content">
+                                <!--<div class="row center "><h4 class="thin">CUSTOMER REGISTRATION CORPORATE</h4></div>-->
+
+                                <f:view>
+                                    <h:form id="customer-registration">
+                                        <p:growl autoUpdate="true" />
+
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <h:inputText id="name" required="true" value="#{cusromerRegistrationCorporate.name}" requiredMessage="The company name field is required."></h:inputText>
+                                                <h:message for="name" style="color:red" />
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="name">Company Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="input-field col s2">
+                                                <h:inputText id="no" required="true" value="#{cusromerRegistrationCorporate.no}" requiredMessage="The no field is required."></h:inputText>
+                                                <h:message for="no" style="color:red" />
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="no">No</label>
+                                            </div>
+                                            <div class="input-field col s3">
+                                                <h:inputText id="street" required="true" value="#{cusromerRegistrationCorporate.street}" requiredMessage="The street field is required."></h:inputText>
+                                                <h:message for="street" style="color:red" />
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="street">Street</label>
+                                            </div>
+                                            <div class="input-field col s4">
+                                                <h:inputText id="city" required="true" value="#{cusromerRegistrationCorporate.city}" requiredMessage="The city field is required."></h:inputText>
+                                                <h:message for="city" style="color:red" />
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="city">City</label>
+                                            </div>
+                                            <div class="input-field col s3">
+                                                <h:inputText id="postal_code"  value="#{cusromerRegistrationCorporate.postal_code}" requiredMessage="The postal code field is required." ></h:inputText>
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="postal_code">Postal Code</label>
+                                            </div>
+                                        </div>                                   
+                                        <div class="row">
+                                            <div class="input-field col s4">
+                                                <h:inputText id="phone_i" required="true" value="#{cusromerRegistrationCorporate.phone_i}" requiredMessage="The phone number field is required." validatorMessage="Invalid Phone Number">
+                                                    <f:validateLength minimum="10" maximum="10" />
+                                                    <f:validateRegex pattern="[0-9]+" />
+                                                </h:inputText>
+                                                <h:message for="phone_i" style="color:red" />
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="phone_i">Phone: I</label>
+                                            </div>
+                                            <div class="input-field col s4">
+                                                <h:inputText id="phone_ii"  value="#{cusromerRegistrationCorporate.phone_ii}" validatorMessage="Invalid Length">
+                                                    <!--                                                    <f:validateLength minimum="10" maximum="10" />-->
+                                                </h:inputText>
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="phone_ii">Phone: II</label>
+                                            </div>
+                                            <div class="input-field col s4">
+                                                <h:inputText id="fax" value="#{cusromerRegistrationCorporate.fax}" validatorMessage="Invalid Length">
+                                                    <!--                                                    <f:validateLength minimum="10" maximum="10" />-->
+                                                </h:inputText>
+                                                <!--<input id="first_name" type="text" class="validate"/>-->
+                                                <label for="fax">Fax</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <h:inputText id="email" value="#{cusromerRegistrationCorporate.email}" required="true" class="validate" requiredMessage="The email address field is required." validatorMessage="Invalid email format">
+                                                    <f:validateRegex pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"  />
+                                                </h:inputText>
+                                                <h:message for="email" style="color:red" />
+                                                <label for="email">Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col s12" align="right">     
+                                                <h:commandLink value="Submit" styleClass="btn btn-large" style="background: #ff5a92;" actionListener="#{cusromerRegistrationCorporate.SaveCusromerRegistrationCorporate}" />
+                                            </div>
+                                        </div>
+                                    </h:form>
+                                </f:view>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--</div>-->
+
+
+        </main>
+
+        <footer class="page-footer">
+            <ui:include src="/secured/footer.xhtml" />
+        </footer>
+
+
+
+    </h:body>
+
+
+</html>
+

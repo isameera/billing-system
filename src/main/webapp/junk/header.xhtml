@@ -1,0 +1,19 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"   
+    xmlns:p="http://primefaces.org/ui" 
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:form>
+        <nav>
+            <div class="nav-wrapper" style="background-color: #00bcd4;">
+                <a href="#" class="brand-logo"> <img class="responsive-img" src="../resources/images/Leeds-Logo.jpg" style="max-width: 128px;"/>  </a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    <li>Welcome, #{loginBean.name}</li>
+                    <li><h:commandLink actionListener="#{loginBean.doLogout}" value="Logout"/></li>
+                    <li><a href="homepage.xhtml" title="Home Page"><i class="material-icons">view_module</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </h:form>
+</ui:composition>

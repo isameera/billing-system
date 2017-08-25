@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="content">
+        <div class=" card ui-g ui-fluid">
+
+            <div class="ui-g-12 ui-lg-12">
+
+                <h3>Advance Request Sheet</h3>
+
+                <div class="ui-g-12" >
+                    <div class="ui-g-6" >
+
+                        <p:outputLabel value="Select Site" for="location" style="font-weight: bold;" />
+                        <p:selectOneMenu id="location" value="#{optionLoader.location}" autoWidth="false" effect="slide" >
+                            <f:selectItem itemLabel="Select" itemValue="none" noSelectionOption="true" />
+                            <f:selectItems value="#{optionLoader.locationList}" />
+
+                        </p:selectOneMenu>
+
+                    </div>
+                    <div class="ui-g-3" >
+
+                        <p:outputLabel for="department" value="Division" style="font-weight: bold;" />
+                        <p:selectOneMenu id="department" value="#{optionLoader.department}" autoWidth="false"  effect="slide" >
+                            <f:selectItems value="#{optionLoader.departmentList}" />
+
+                        </p:selectOneMenu>
+
+                    </div>
+                    <div class="ui-g-3" >
+
+                        <p:outputLabel for="date" value="Date" style="font-weight: bold;" />
+                        <p:calendar id="date"  pattern="yyyy-MM-dd" />
+
+                    </div>
+                </div>
+
+                <div class="ui-g-12" >
+                    <h:form id="form">
+                        <h:panelGroup id ="wrapper">
+                            <p:dataTable id="subtable" var="types" value="#{advanceRequest.requestTypes}" editable="true" editMode="cell" widgetVar="cellCars" >
+
+                                <f:facet name="header">  
+                                    <h:outputText value="Request Details"/>  
+                                </f:facet>  
+
+                                <p:columnGroup type="header">  
+                                    <p:row>  
+                                        <p:column headerText="No " width="5%" />  
+                                        <p:column headerText="Description" width="45%" />  
+                                        <p:column headerText="Unit" width="13%"/>  
+                                        <p:column headerText="Qty" width="7%"/>  
+                                        <p:column headerText="Rate" width="7%"/>
+                                        <p:column headerText="Amount" width="13%"/>  
+                                    </p:row>  
+
+
+                                </p:columnGroup>  
+
+                                <p:subTable var="details" value="#{types.details}">  
+                                    <f:facet name="header">
+
+                                        <!--<span class="ui-g-6">--> 
+
+                                        <h:outputText  value="#{types.name}"/>
+
+                                        <p:commandButton icon="ui-icon-add" id="myb#{types.typeID}" action="#{advanceRequest.addRow()}" process="@this,form">
+                                            <f:ajax render=":form:wrapper" />
+                                        </p:commandButton>
+
+                             
+
+                                    </f:facet>
+
+
+
+
+                                    <p:column >
+                                        <h:outputText value="#{details.no}"/>  
+                                    </p:column>
+                                    <p:column  >
+                                        <h:outputText value="#{details.fixText}"/>  
+                                        <p:inputText id="modelInput2" value="#{details.description}" style="border: none;" />
+
+                                    </p:column>
+                                    <p:column >
+
+                                        <p:selectOneMenu id="departments" autoWidth="false" style="border: none;" >
+                                            <f:selectItems value="#{details.unitList}" />
+
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column >
+                                        <p:inputText id="modelInput4" value="#{details.qty}" onkeypress="return isNumberKey(event)" style="border: none;text-align: center;" />
+                                    </p:column>
+                                    <p:column >
+                                        <p:inputText id="modelInput5" value="#{details.rate}" onkeypress="return isNumberKey(event)"  style="border: none;text-align: right;" />
+                                    </p:column>
+                                    <p:column >
+                                        <p:inputText id="modelInput6" value="#{details.amount}" onkeypress="return isNumberKey(event)"  style="border: none;text-align: right;" />
+                                    </p:column>
+
+                                </p:subTable>
+                            </p:dataTable>
+                        </h:panelGroup>
+      <p:commandButton value="Count" actionListener="#{advanceRequest.addRow()}" update="wrapper" />
+                    </h:form>
+     
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <script>
+            function callMethod(ab) {
+                alert(ab);
+                remoteSendMsgCMD([{name: 'msg', value: ab}]);
+            }
+
+
+        </script>
+    </ui:define>
+
+</ui:composition>
+

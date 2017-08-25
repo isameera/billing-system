@@ -1,0 +1,472 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+
+            .payment-history.ui-datatable tbody tr.ui-widget-content td {
+                padding: 2px 5px !important;
+            }
+
+
+
+        </style>
+        <h:outputStylesheet name="css/print-with-border.css" library="ultima-layout" />
+        <link href="https://fonts.googleapis.com/css?family=Stardos+Stencil" rel="stylesheet" />
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>CORPORATE RECEIPT</h1>
+
+                    <p:tabMenu activeIndex="#{param.i}">
+                        <p:menuitem value="CORPORATE" outcome="/secured/receipt" icon="ui-icon-account-balance">
+                            <f:param name="i" value="0" />
+                        </p:menuitem>
+                        <p:menuitem value="INDIVIDUAL" outcome="/secured/receipt-in" icon="ui-icon-account-box">
+                            <f:param name="i" value="1" />
+                        </p:menuitem>
+                    </p:tabMenu>
+                    <br/>
+
+                    <div class="ui-g">
+                        <div class="ui-g-12">
+
+
+                            <h:form id="form">
+                                <p:growl autoUpdate="true" id="msgs" showDetail="true"/>
+                                <div class="ui-g">
+                                    <div class="ui-g-12">
+
+                                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:autoComplete id="customer" minQueryLength="3" value="#{receiptCop.customer}" completeMethod="#{receiptCop.completeCustomersList}" effect="fade" style="width: 100%;">
+                                                    <p:ajax event="itemSelect" listener="#{receiptCop.onInvoiceItemSelect}" update="msgs" />
+                                                </p:autoComplete>
+                                                <h:message for="customer" style="color:red" />
+                                                <label>Customer</label>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:calendar id="date_from" value="#{receiptCop.date_from}"  pattern="yyyy-MM-dd" mask="true" >
+                                                </p:calendar> 
+                                                <label>Date From</label>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:calendar id="date_to" value="#{receiptCop.date_to}"  pattern="yyyy-MM-dd" mask="true"  >
+                                                </p:calendar> 
+                                                <label>Date To</label>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup styleClass="md-inputfield">
+                                                <p:commandButton value="Search"  actionListener="#{receiptCop.Search}" icon="ui-icon-search" iconPos="right" update="receiptTable" rendered="true" style="width:auto">
+                                                    <!--<f:ajax execute="@form" render="@form" />-->
+                                                </p:commandButton>  
+                                            </h:panelGroup>
+
+
+                                        </p:panelGrid>
+
+
+                                        <p:dataTable id="receiptTable" var="inv" value="#{receiptCop.invoiceLists}" selectionMode="single" reflow="true"
+                                                     selection="#{receiptCop.selectedInvoises}" rowKey="#{inv.id}" paginator="true" rows="10" lazy="true">
+
+                                            <p:column headerText="Id" sortBy="#{inv.id}" style="text-align: center; width: 10%;">
+                                                <h:outputText value="#{inv.id}" />
+                                            </p:column>
+
+                                            <p:column headerText="Date" sortBy="#{inv.date}" style="text-align: center; width: 10%;">
+                                                <h:outputText value="#{inv.date}" />
+                                            </p:column>
+
+                                            <p:column headerText="Customer" sortBy="#{inv.customer}" style="text-align: left; width: 40%;">
+                                                <h:outputText value="#{inv.customer}" />
+                                            </p:column>
+
+                                            <p:column headerText="Invoice Total" sortBy="#{inv.invoiceTotal}" style="text-align: right; width: 15%;">
+                                                <h:outputText value="#{inv.invoiceTotal}" />
+                                            </p:column>
+
+                                            <p:column headerText="Due Amount" sortBy="#{inv.due}" style="text-align: right; width: 15%;">
+                                                <h:outputText value="#{inv.due}" />
+                                            </p:column>
+
+                                            <p:column headerText=""  style="text-align: center; width: 10%;">
+                                                <p:commandButton value="Pay" type="button" onclick="PF('dlg1').show();" styleClass="secondary" style="width:100%">
+                                                    <p:ajax listener="#{receiptCop.loadReceiptPrint(inv)}" update="invoiceView" />
+                                                </p:commandButton>
+                                            </p:column>
+
+                                        </p:dataTable>
+
+                                    </div>
+                                </div>
+
+                            </h:form>
+
+                            <h:form>
+                                <p:remoteCommand name="onload" action="#{receiptCop.emptyTable()}" update="form"/>
+                            </h:form>
+
+                            <p:dialog header="Invoice Settlement Form" id="model_1" widgetVar="dlg1" modal="true" height="500" width="1000" responsive="true">
+
+                                <h:form id="invoiceView">
+                                    <p:growl autoUpdate="true" />
+
+                                    <div class="ui-g">
+                                        <div class="ui-g-7">
+                                            <h2>Invoice Details</h2>
+                                        </div>
+                                        <div class="ui-g-2"></div>
+                                        <div class="ui-g-3" style="text-align: center;">
+                                            <h2>Payment History</h2>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="ui-g">
+                                        <div class="ui-g-9">
+
+                                            <div class="ui-g" >
+                                                <div class="ui-g-8" >
+                                                    <p>Customer Details</p>
+                                                    <label> Name: #{invoicePrint.customerName}</label><br/>
+                                                    <label> Address: #{invoicePrint.customerAddress}, #{invoicePrint.customerCity}</label><br/>
+                                                </div>
+                                                <div class="ui-g-4">
+                                                    <label>Date: #{invoicePrint.invoiceDate}</label><br/>
+                                                    <label>Invoice No: #{invoicePrint.invoiceNo}</label><br/>
+                                                    <label>Order No: #{invoicePrint.orderNo}</label><br/>
+                                                    <label>PO No: #{invoicePrint.poNo}</label><br/>
+                                                    <label>DN No: #{invoicePrint.dnNo}</label>
+                                                </div>
+                                            </div>
+
+
+                                            <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group" style="font-weight: bold;">
+
+                                                <h:panelGroup >                                        
+                                                    <label>Invoice Total: </label><h:outputText id="invoiceTotal" value="#{invoicePrint.invoiceTotal}"/>
+                                                </h:panelGroup>  
+                                                <h:panelGroup >                                        
+                                                    <label>Total Paid: </label><h:outputText id="advance" value="#{(invoicePrint.invoicePaid)}"/>
+                                                </h:panelGroup>      
+                                                <h:panelGroup >                                        
+                                                    <label>Due Amount: </label><h:outputText id="balance" value="#{invoicePrint.invoiceDue}"/>
+                                                </h:panelGroup>  
+
+                                            </p:panelGrid>
+
+
+
+                                            <hr/>
+
+                                            <div class="ui-g">
+                                                <div class="ui-g-7">
+                                                    <h2>Receipt Details</h2>
+                                                </div>
+                                                <div class="ui-g-5" style="text-align: right;">
+                                                    <h2>Receipt No: #{receiptCop.receiptNo}</h2>
+                                                </div>
+                                            </div>
+
+                                            <h:form id="formSave">
+                                                <p:growl autoUpdate="true" showDetail="true"/>
+                                                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+
+                                                    <p:selectOneMenu id="custom_type" required="true" value="#{receiptCop.coc}"  valueChangeListener="#{receiptCop.invoiveFireSelection}" requiredMessage="Payment Type is required." >
+                                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                                        <f:selectItem itemLabel="Cash" itemValue="1" />
+                                                        <f:selectItem itemLabel="Cheque" itemValue="2" />
+                                                        <p:ajax event="valueChange" immediate="true"  update="invoiceView" />
+                                                    </p:selectOneMenu>
+                                                    <p:selectOneMenu id="chequeController" rendered="#{receiptCop.coc == 2}" required="true" value="#{receiptCop.chequeController}"  valueChangeListener="#{receiptCop.selectChequeController}" requiredMessage="Cheque Controller is required." >
+                                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                                        <f:selectItem itemLabel="Cash" itemValue="1" />
+                                                        <f:selectItem itemLabel="AC Pay" itemValue="2" />
+                                                        <f:selectItem itemLabel="Cross" itemValue="3" />
+                                                        <p:ajax event="valueChange" immediate="true"  />
+                                                    </p:selectOneMenu>
+                                                    <h:panelGroup styleClass="md-inputfield" rendered="#{receiptCop.coc == 2}">
+                                                        <p:inputText id="chequeNumber"  value="#{receiptCop.chequeNo}" required="true" requiredMessage="Cheque Number is required." styleClass="double-only"></p:inputText>
+                                                        <label>Cheque Number</label>
+                                                        <p:message for="chequeNumber" style="color:red" />
+                                                    </h:panelGroup>
+                                                    <h:panelGroup styleClass="md-inputfield" rendered="#{receiptCop.coc == 2}">
+                                                        <p:calendar id="chequeDate" value="#{receiptCop.chequeDateObj}"  pattern="yyyy-MM-dd" mask="true"  required="true" requiredMessage="Cheque Date field is required.">
+                                                            <p:ajax event="dateSelect" listener="#{receiptCop.onDateSelect}" />
+                                                        </p:calendar>
+                                                        <p:message for="chequeDate" style="color:red" />
+                                                        <label>Cheque Date</label>
+                                                    </h:panelGroup>
+                                                    <p:selectOneMenu id="bank" rendered="#{receiptCop.coc == 2}" required="true" value="#{receiptCop.bank}" valueChangeListener="#{receiptCop.selectBank}" requiredMessage="Bank is required." >
+                                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                                        <f:selectItem itemLabel="Amana Bank" itemValue="53" />
+                                                        <f:selectItem itemLabel="Bank Of Ceylon" itemValue="12" />
+                                                        <f:selectItem itemLabel="Commercial Bank" itemValue="30" />
+                                                        <f:selectItem itemLabel="DFCC" itemValue="15" />
+                                                        <f:selectItem itemLabel="Hatton National Bank" itemValue="35" />
+                                                        <f:selectItem itemLabel="Hatton National Bank" itemValue="3" />
+                                                        <f:selectItem itemLabel="National Development Bank PLC" itemValue="42" />
+                                                        <f:selectItem itemLabel="National Saving Bank" itemValue="56" />
+                                                        <f:selectItem itemLabel="Nations Trust Bank" itemValue="10" />
+                                                        <f:selectItem itemLabel="Pan Asia Bank" itemValue="13" />
+                                                        <f:selectItem itemLabel="Peoples Bank" itemValue="7" />
+                                                        <f:selectItem itemLabel="Sampath Bank" itemValue="4" />
+                                                        <f:selectItem itemLabel="Sanasa Development Bank" itemValue="57" />
+                                                        <f:selectItem itemLabel="Seylan Bank PLC" itemValue="47" />
+                                                        <f:selectItem itemLabel="Standard Charted Bank" itemValue="33" />
+                                                        <f:selectItem itemLabel="Union Bank of Colombo  PLC" itemValue="49" />
+                                                        <p:ajax event="valueChange" immediate="true"  update="branch" />
+                                                    </p:selectOneMenu>
+                                                    <h:panelGroup styleClass="md-inputfield" rendered="#{receiptCop.coc == 2}">
+                                                        <p:autoComplete id="branch" minQueryLength="3" value="#{receiptCop.bank_branch}"  required="true" requiredMessage="Bank Branch field is required." completeMethod="#{receiptCop.completeBranchList}" effect="fade" style="width: 100%;"></p:autoComplete>
+                                                        <p:message for="branch" style="color:red" />
+                                                        <label>Bank Branch</label>
+                                                    </h:panelGroup>
+
+                                                    <h:panelGroup styleClass="md-inputfield">
+                                                        <p:inputText id="po_no"  value="#{receiptCop.poNo}"  requiredMessage="Current Payment is required." ></p:inputText>
+                                                        <label>PO No</label>
+                                                        <p:message for="po_no" style="color:red" />
+                                                    </h:panelGroup>
+                                                    <h:panelGroup styleClass="md-inputfield">
+                                                        <p:inputText id="dn_no"  value="#{receiptCop.dnNo}"  requiredMessage="Current Payment is required." ></p:inputText>
+                                                        <label>DN No</label>
+                                                        <p:message for="dn_no" style="color:red" />
+                                                    </h:panelGroup>
+                                                    <h:panelGroup styleClass="md-inputfield">
+                                                        <p:inputText id="currentPayment"  value="#{receiptCop.payment}" required="true" requiredMessage="Current Payment is required." styleClass="double-only"></p:inputText>
+                                                        <label>Current Payment</label>
+                                                        <p:message for="currentPayment" style="color:red" />
+                                                    </h:panelGroup>  
+
+                                                </p:panelGrid>
+
+                                                <p:commandButton value="Save Receipt" styleClass="cyan-btn"   actionListener="#{receiptCop.SaveCorporateReceipt}"  update="invoiceView receiptPrint form" >
+                                                    <!--<f:ajax execute="@form" render="@form" />-->
+                                                </p:commandButton>  
+
+                                            </h:form>
+
+
+
+                                        </div>
+                                        <div class="ui-g-3" >
+                                            <p:dataTable styleClass="payment-history" var="re" value="#{invoicePrint.phs}" >
+
+                                                <p:column headerText="No" style="font-size: 10px; height: 20px;">
+                                                    #{re.id}
+                                                </p:column>
+
+                                                <p:column headerText="Date" style="font-size: 10px; height: 20px; text-align: center;">
+                                                    #{re.date}
+                                                </p:column>
+
+                                                <p:column headerText="Amount" style="font-size: 10px; height: 20px; text-align: right;">
+                                                    #{re.amount}
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </div>
+                                    </div>
+                                </h:form>
+
+
+
+                            </p:dialog>   
+
+
+                            <p:dialog header="Print Invoice" id="print_button" widgetVar="dlg3" modal="true" height="80" width="300" responsive="true">
+                                <h:form>
+                                    <p:growl autoUpdate="true" />
+                                    <div class="ui-g" >
+                                        <div class="ui-g-1" ></div>
+                                        <div class="ui-g-10" >
+                                            <p:commandButton value="Print" type="button" onclick="PF('dlg3').hide();" icon="ui-icon-print" styleClass="amber-btn" style="width:100%; height: 40px">
+                                                <p:printer target="receiptPrint" />
+                                            </p:commandButton>
+                                        </div>
+                                        <div class="ui-g-1" ></div>
+                                    </div>
+                                </h:form>
+                            </p:dialog>
+
+                            <p:dialog header="Invoice Preview" id="model_2" widgetVar="dlg2" modal="true" height="400" width="800" responsive="true" >
+
+                                <h:form id="receiptPrint">
+                                    <p:growl autoUpdate="true" />
+
+                                    <div class="ui-g" style="margin-top: 0px;">
+                                        <div class="ui-g-3">
+                                            <img src="http://178.238.234.42/billing-system-1.0/javax.faces.resource/Leeds-Logo.jpg.xhtml?ln=images" style="max-width: 170px;"/>
+                                        </div>
+                                        <div class="ui-g-6" style="padding-top: 0px; font-size: 13px;" >
+                                            <h1 style="font-family: 'Stardos Stencil', cursive; line-height: 13px;">Leeds Graphics (PVT) Ltd.</h1>
+                                            <p style="line-height: 14px;">No. 356E, Pannipitiya Road, Thalawathugoda.<br/>
+                                                Tel: 4-301616/2796151 Fax: 4301616<br/>
+                                                E-mail: leedsgraphics@yahoo.com</p>
+                                        </div>
+                                        <div class="ui-g-3">
+                                            <div style="text-align: center;"><span style="line-height: 40px; font-size: 27px; font-weight: bold; padding-top: 0px;">RECEIPT</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!--                            <div class="ui-g">
+                                                                    <div class="ui-g-7">
+                                                                        <h3>Invoice Details</h3>
+                                                                    </div>
+                                                                    <div class="ui-g-2"></div>
+                                                                    <div class="ui-g-3" style="text-align: center;">
+                                                                        <h3>Payment History</h3>
+                                                                    </div>
+                                                                </div>-->
+
+                                    <div class="ui-g">
+                                        <div class="ui-g-7">
+
+                                            <div class="ui-g" style="font-size: 12px; line-height: 13px;">
+                                                <div class="ui-g-7" >
+                                                    <label style="font-size: 13px; line-height: 13px; ">Customer Details</label><br/>
+                                                    <div style="height: 10px;"></div>
+                                                    <label> Name: #{invoicePrint.customerName}</label><br/>
+                                                    <label> Address: #{invoicePrint.customerAddress}, #{invoicePrint.customerCity}</label>
+                                                </div>
+                                                <div class="ui-g-5">
+                                                    <label>Date: #{invoicePrint.invoiceDate}</label><br/>
+                                                    <label>Invoice No: #{invoicePrint.invoiceNo}</label><br/>
+                                                    <label>Order No: #{invoicePrint.orderNo}</label><br/>
+                                                    <label>PO No: #{invoicePrint.poNo}</label><br/>
+                                                    <label>DN No: #{invoicePrint.dnNo}</label>
+                                                </div>
+                                            </div>
+
+                                            <hr/>
+
+                                            <div class="ui-g">
+
+                                                <div class="ui-g-6">
+
+                                                    <lable style="font-size: 15px;">This Receipt Details</lable>
+
+                                                    <div class="ui-g" style="font-size: 12px; line-height: 13px; padding-left: 0px;">
+                                                        <div class="ui-g-12">
+                                                            <label>No: #{invoicePrint.receiptNo}</label><br/>
+                                                            <label>Date: #{invoicePrint.receiptDate}</label><br/>
+                                                            <label>Payment Mode: #{invoicePrint.receiptPaymentMode}</label><br/>
+                                                            <label>Amount: #{invoicePrint.receiptAmount}</label><br/>
+                                                            <p:panel rendered="#{invoicePrint.receiptPaymentMode eq 'Cheque'}" >
+                                                                <p:outputLabel value="Cheque No: #{invoicePrint.receiptChequeNumber}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                                <p:outputLabel value="Cheque Date: #{invoicePrint.receiptChequeDate}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                                <p:outputLabel value="Cheque Controller: #{invoicePrint.receiptChequeController}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                                <p:outputLabel value="Bank: #{invoicePrint.receiptChequeBank}" style="font-size: 12px; line-height: 13px;"></p:outputLabel><br/>
+                                                                <p:outputLabel value="Bank Branch: #{invoicePrint.receiptChequeBankBranch}" style="font-size: 12px; line-height: 13px;"></p:outputLabel>
+                                                            </p:panel>
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="ui-g-6" style="text-align: right;">
+
+                                                    <lable style="font-size: 15px; padding-right: 16px;">Payment Summary</lable>
+
+                                                    <div class="ui-g" >
+                                                        <div class="ui-g-12">
+
+                                                            <div class="ui-g" style="font-size: 13px; line-height: 15px; text-align: right; font-weight: bold;">
+                                                                <div class="ui-g-12">
+                                                                    <label>Invoice Total: #{invoicePrint.invoiceTotal}</label><br/>
+                                                                    <label>Total Paid: #{(invoicePrint.invoicePaid)}</label><br/>
+                                                                    <label>Due Amount: #{invoicePrint.invoiceDue}</label><br/>
+                                                                </div>
+                                                            </div>
+
+                                                            <div  style="line-height: 10px; text-align: center; margin-top: 40px; ">
+                                                                <p>...................................</p>
+                                                                <p>Signature</p>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="ui-g-5" >
+                                            <p:dataTable styleClass="payment-history" var="re" value="#{invoicePrint.phs}" >
+
+                                                <p:column headerText="No" style="font-size: 10px; height: 20px;">
+                                                    #{re.id}
+                                                </p:column>
+
+                                                <p:column headerText="Date" style="font-size: 10px; height: 20px; text-align: center;">
+                                                    #{re.date}
+                                                </p:column>
+
+                                                <p:column headerText="Amount" style="font-size: 10px; height: 20px; text-align: right;">
+                                                    #{re.amount}
+                                                </p:column>
+
+                                            </p:dataTable>
+
+                                        </div>
+                                    </div>
+
+
+                                </h:form>
+                            </p:dialog>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

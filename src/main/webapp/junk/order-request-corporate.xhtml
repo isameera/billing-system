@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html"  xmlns:p="http://primefaces.org/ui"  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <!--Import Google Icon Font-->
+        <link type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+        <!-- Compiled and minified CSS -->
+        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css"/>
+
+        <!--Import jQuery before materialize.js-->
+        <!--<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>-->
+
+        <!-- Compiled and minified JavaScript -->
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>-->
+
+        <h:outputStylesheet library="css" name="custom.css"/>
+        <h:outputStylesheet library="css" name="sweetalert.css"/>
+        <h:outputScript library="js" name="sweetalert.min.js"/>
+        <h:outputScript library="js" name="custom.js"/>
+
+        <link rel="shortcut icon" type="image/x-icon" href="../resources/images/favicon/exon-favicon-ii.png"/>
+        <title>Corporate Order Request | Exon Billing System</title>
+    </h:head>
+    <h:body>
+
+
+        <div class="preloader-background ">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer ">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div><div class="gap-patch">
+                        <div class="circle"></div>
+                    </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <header>
+            <ui:include src="/secured/header.xhtml" />
+        </header>
+
+        <main class="container valign-wrapper">
+
+            <div class="center_align full-width">
+                <div class="row">
+                    <div class="col s12 ">
+                        <div class="card">
+                            <div class="card-header light-blue">
+                                <div class="card-title">
+                                    <h5 class="flight-card-title">Corporate Order Request <span style="padding-left: 320px;">Order No: <h:outputLabel id="totl_amount"  value="#{loginBean.order_no}" style="font-size: 23px; color: white;" /></span></h5>
+
+                                </div>
+                            </div>
+
+                            <div class="card-content" style="min-width: 900px;">
+                                <!--<div class="row center "><h4 class="thin">CUSTOMER REGISTRATION CORPORATE</h4></div>-->
+
+                                <f:view>
+                                    <h:form>
+                                        <p:growl autoUpdate="true" />
+                                        <div class="row">
+                                            <div class="input-field col s12 ">
+
+
+                                                <h:dataTable value="#{order.orderList}" var="o"
+                                                             styleClass="order-table"
+                                                             headerClass="order-table-header"
+                                                             rowClasses="order-table-odd-row,order-table-even-row"
+                                                             >
+
+                                                    <h:column >
+
+                                                        <f:facet name="header">Quantity</f:facet>
+                                                            #{o.qty}
+
+                                                    </h:column>
+
+                                                    <h:column>
+
+                                                        <f:facet name="header">Order Item</f:facet>
+                                                            #{o.productName}
+
+                                                    </h:column>
+
+                                                    <h:column>
+
+                                                        <f:facet name="header">Price</f:facet>
+                                                            #{o.price}
+
+                                                    </h:column>
+
+                                                    <h:column>
+
+                                                        <f:facet name="header">Action</f:facet>
+
+                                                        <h:commandLink value="Delete" action="#{order.deleteAction(o)}" />
+
+                                                    </h:column>
+
+                                                </h:dataTable>
+
+                                            </div>
+                                        </div>
+                                        <div class="row">                                         
+                                            <div class="col s12" >     
+                                                Total Price: <h:outputLabel id="totl_amount"  value="#{order.voucher_total}" style="color: black; font-size: 15px;" />
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="row">
+                                            <div class="input-field col s3">
+                                                <p:inputText id="qty" value="#{order.qty}" placeholder="Quantity" requiredMessage="Quantity field is required." ></p:inputText>
+                                                <p:message for="qty" style="color:red" />
+                                            </div>
+                                            <div class="input-field col s5">
+                                                <p:inputText id="productName" placeholder="Order Item" value="#{order.productName}" requiredMessage="Order item field Name is required."></p:inputText>
+                                                <p:message for="productName" style="color:red" />
+                                            </div>
+                                            <div class="input-field col s4">
+                                                <p:inputText id="price"  value="#{order.price}" placeholder="Price" requiredMessage="Price field is required."></p:inputText>
+                                                <p:message for="price" style="color:red" />
+                                            </div>
+
+                                        </div>  
+                                        <div class="row">
+                                            <div class="col s12" align="right">     
+                                                <h:commandButton value="Add to Table" styleClass="btn light-blue" action="#{order.addAction}" />
+                                            </div>
+                                        </div>
+                                    </h:form>
+
+
+                                    <h:form id="CorporateOrderRequest">
+                                        <p:growl autoUpdate="true" id="msgs" showDetail="true" />
+
+                                        <div class="row">
+                                            <!--                                            <div class="input-field col s2">
+                                                                                            <p:selectOneMenu id="c_type"  style="width: 100%; border: none;" >
+                                                                                                <f:selectItem itemLabel="Select" itemValue="0" />
+                                                                                                <f:selectItem itemLabel="Corporate" itemValue="1" />
+                                                                                                <f:selectItem itemLabel="Individual" itemValue="2" />
+                                                                                            </p:selectOneMenu>
+                                                                                            <h:message for="c_type" style="color:red" />
+                                                                                        </div>-->
+
+                                            <div class="input-field col s2">
+                                                <!--                                                <p>
+                                                                                                    <input name="group1" type="radio" value="#{order.gop_gup_type}" id="test1" />
+                                                                                                    <label for="test1">Corporate</label>
+                                                
+                                                                                                    <input name="group1" type="radio" id="test2" />
+                                                                                                    <label for="test2">Individual</label>
+                                                                                                </p>-->
+
+<!--                                                <p:selectOneRadio  id="console" value="#{order.gop_gup_type}" >
+                                                    <f:selectItem  itemLabel="Cop" itemValue="1" />  
+                                                    <f:selectItem itemLabel="Ind" itemValue="2" />
+                                                </p:selectOneRadio> -->
+
+
+                                                <p:selectOneMenu id="console" value="#{order.gop_gup_type}" style="width:100%; border: none; box-shadow: none; top: 0px;">
+                                                    <f:selectItem itemLabel="Select One" itemValue="" />
+                                                    <f:selectItem itemLabel="Corporate" itemValue="1" />
+                                                    <f:selectItem itemLabel="Individual" itemValue="2" />
+                                                </p:selectOneMenu>
+
+
+                                            </div>                               
+                                            <div class="input-field col s5">
+                                                <p:autoComplete id="cutomer" minQueryLength="3" value="#{order.cutomer}" placeholder="Customer" required="true" requiredMessage="This field is required." completeMethod="#{order.completeText}" effect="fade" style="width: 100%;"/>
+                                                <h:message for="customer" style="color:red" />
+                                            </div>
+                                            <div class="input-field col s2">
+                                                <p:inputText id="advance" placeholder="Advance" value="#{order.advance}"  requiredMessage="Advance field is required."></p:inputText>
+                                                <p:message for="advance" style="color:red" />
+                                            </div>
+                                            <div class="input-field col s3">
+                                                <p:calendar id="delivery_date" value="#{order.delivery_date_object}" placeholder="Delivery Date" pattern="yyyy-MM-dd" mask="true" mindate="#{order.date_1}" required="true" requiredMessage="This field is required.">
+                                                    <p:ajax event="dateSelect" listener="#{order.onDateSelect}" update="msgs" />
+                                                </p:calendar> <h:message for="delivery_date" style="color:red" />
+                                            </div>
+                                        </div>    
+
+                                        <div class="row">
+                                            <div class="input-field col s12">
+                                                <h:outputText value="Printing Description" />
+                                                <h:inputTextarea id="printing_des" value="#{order.printing_des}"  class="materialize-textarea" requiredMessage="Printing Description field is required."/>
+                                                <h:message for="printing_des" style="color:red" />
+                                            </div>                                         
+                                        </div>  
+
+                                        <div class="row">
+                                            <div class="col s12" align="center">     
+                                                <h:commandLink value="Submit" styleClass="btn btn-large" style="background: #ff5a92;" actionListener="#{order.SaveCorporateOrder}" />
+                                            </div>
+                                        </div>
+                                    </h:form>
+                                </f:view>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="page-footer">
+            <ui:include src="/secured/footer.xhtml" />
+        </footer>
+
+
+
+    </h:body>
+</html>
+

@@ -1,0 +1,269 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">Forms</ui:define>
+
+    <ui:define name="head">
+        <style type="text/css">
+            .cars-datalist .text-column p:last-child{
+                color:#757575;
+            }
+
+            .cars-datalist .car-item i, .cars-datalist .car-item .car-details {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
+            .cars-datalist .car-item button {
+                float: right;
+            }
+
+            .cars-datalist ul {
+                margin: 0;
+                padding: 0;
+            }
+
+            .ui-car-display td:last-child {
+                font-weight: 700;
+            }
+
+            @media (max-width:640px) {
+                .cars-datalist .text-column {
+                    text-align: center;
+                }
+            }
+
+            /*            .printTable.ui-datatable th  {
+                            border: none !important;
+                            background: white;
+                        }
+            
+                        .printTable.ui-datatable tbody tr.ui-datatable-even {
+                            background-color: white!important;
+                        }
+            
+                        .printTable.ui-datatable tbody tr td  {
+                            border: none!important;
+                            padding: 10px 14px;
+                        }
+            
+                        .printTable.ui-widget-content {
+            
+                            border: none !important; 
+                        }
+            
+                        .printTable.ui-datatable table {
+                            border-collapse: initial !important;
+                        }
+                        
+                        .right-text{
+                            text-align: right !important;
+                            width: 200px !important;
+                        }*/
+
+        </style>
+    </ui:define>
+
+    <ui:define name="content">
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-lg-12">
+
+                <div class="card card-w-title">
+                    <h1>LIST OF CUSTOMER OUTSTANDING</h1>
+
+                
+
+                    <!-- Left Side -->
+                    <!--<div class="card ">-->
+                    <!--<h1>InputText</h1>-->
+
+                    <h:form id="form">
+                        <p:growl autoUpdate="true" id="msgs" showDetail="true"/>
+                        <div class="ui-g">
+                            <div class="ui-g-12">
+
+                                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank form-group">
+
+                                    <p:selectOneMenu id="custom_type" value="#{reportCustomerOutstanding.gop_gup_type}" style="margin-bottom:10px;"  valueChangeListener="#{reportCustomerOutstanding.invoiveFireSelection}" >
+                                        <f:selectItem itemLabel="Select One" itemValue="0" />
+                                        <f:selectItem itemLabel="Corporate" itemValue="1" />
+                                        <f:selectItem itemLabel="Individual" itemValue="2" />
+                                        <f:selectItem itemLabel="Individual Cop." itemValue="3" />
+                                        <p:ajax event="valueChange" immediate="true"  update="customer"/>
+                                    </p:selectOneMenu>
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:autoComplete id="customer" minQueryLength="3" value="#{reportCustomerOutstanding.customer}" completeMethod="#{reportCustomerOutstanding.getAutoCompleteList}" effect="fade" style="width: 100%;">
+                                            <p:ajax event="itemSelect" listener="#{reportCustomerOutstanding.onItemSelect}" update="msgs" />
+                                        </p:autoComplete>
+                                        <h:message for="customer" style="color:red" />
+                                        <label>Customer</label>
+                                    </h:panelGroup>
+
+
+                                    <h:panelGroup styleClass="md-inputfield">
+                                        <p:commandButton value="Search"  actionListener="#{reportCustomerOutstanding.invoiceBySearch}" icon="ui-icon-search" iconPos="right" update="outstandingList" rendered="true" style="width:auto">
+                                            <!--<f:ajax execute="@form" render="@form" />-->
+                                        </p:commandButton>  
+                                    </h:panelGroup>
+
+                                </p:panelGrid>
+
+
+                                <p:dataTable id="outstandingList" var="inv" value="#{reportCustomerOutstanding.invoiceItemsesList}" selectionMode="single" reflow="true"
+                                             selection="#{reportCustomerOutstanding.selectedInvoice}" rowKey="#{inv.id}" paginator="true" rows="10" lazy="true">
+                                    <!--                                            <f:facet name="header">
+                                                                                    Single with Row Click
+                                                                                </f:facet>-->
+                                    <p:column headerText="Id" sortBy="#{inv.id}" style="text-align: center;">
+                                        <h:outputText value="#{inv.id}" />
+                                    </p:column>
+
+                                    <p:column headerText="Date" sortBy="#{inv.date}" style="text-align: center;">
+                                        <h:outputText value="#{inv.date}" />
+                                    </p:column>
+
+                                    <p:column headerText="Customer" sortBy="#{inv.customer}" style="text-align: center;">
+                                        <h:outputText value="#{inv.customer}" />
+                                    </p:column>
+
+                                    <p:column headerText="Invoice Total" sortBy="#{inv.invoiceTotal}" style="text-align: right;">
+                                        <h:outputText value="#{inv.invoiceTotal}" />
+                                    </p:column>
+
+                                    <p:column headerText="Due Amount" sortBy="#{inv.due}" style="text-align: right;">
+                                        <h:outputText value="#{inv.due}" />
+                                    </p:column>
+
+                                    <p:column headerText=""  style="text-align: center;">
+                                        <p:commandButton value="View" type="button" onclick="PF('dlg1').show();" styleClass="secondary" style="width:100%">
+                                            <p:ajax listener="#{reportCustomerOutstanding.loadInvoicePrint(inv)}" update="invoiceView" />
+                                        </p:commandButton>
+                                    </p:column>
+                                    <p:column headerText=""  style="text-align: center;">
+                                        <p:commandButton value="Print" type="button" icon="ui-icon-print" styleClass="cyan-btn" style="width:100%">
+                                            <p:ajax listener="#{reportCustomerOutstanding.loadInvoicePrint(inv)}" update="invoicePrint" />
+                                            <p:printer target="invoiceView" />
+                                        </p:commandButton>
+                                    </p:column>
+                                </p:dataTable>
+
+                            </div>
+                        </div>
+
+                    </h:form>
+
+
+                    <p:dialog header="Invoice Preview" id="model_1" widgetVar="dlg1" modal="true" height="400" width="900" responsive="true">
+
+                        <h:form id="invoiceView">
+                            <p:growl autoUpdate="true" />
+
+                            <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                <h:panelGroup>
+                                    <label>Customer Name: #{invoicePrint.customerName}</label><br/>
+                                    <label>Customer Address: #{invoicePrint.customerAddress}, #{invoicePrint.customerCity}</label>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group">
+                                        <h:panelGroup></h:panelGroup>
+                                        <h:panelGroup>
+                                            <label>Date: #{invoicePrint.invoiceDate}</label><br/>
+                                            <label>Invoice No: #{invoicePrint.invoiceNo}</label><br/>
+                                            <label>Order No: #{invoicePrint.orderNo}</label><br/>
+                                            <label>PO No: #{invoicePrint.orderNo}</label><br/>
+                                            <label>DN No: #{invoicePrint.orderNo}</label>
+                                        </h:panelGroup>
+                                    </p:panelGrid>
+                                </h:panelGroup>
+                            </p:panelGrid>
+
+
+                            <p:dataTable id="viewTable" styleClass="viewTable" var="in" value="#{invoicePrint.invoiceItemList}"  style="margin-bottom:20px">
+
+                                <p:column headerText="Item Name" style="text-align: left;">
+                                    #{in.productName}
+                                </p:column>
+
+                                <p:column headerText="Quantity" style="text-align: center;">
+                                    #{in.qty}
+                                </p:column>
+
+                                <p:column headerText="Unit Price" style="text-align: right;">
+                                    #{in.price}
+                                </p:column>
+
+                                <p:column headerText="Line Total" style="text-align: right;">
+
+                                    #{in.tine_total}
+                                </p:column>
+                                <p:summaryRow>
+                                    <p:column colspan="3" style="text-align:right">
+                                        <h:outputText value="Total:" />
+                                    </p:column>
+                                    <p:column>
+                                        <h:outputText value="#{invoicePrint.invoiceTotal}">
+                                            <f:convertNumber type="currency" currencySymbol="R" />
+                                        </h:outputText>
+                                    </p:column>
+                                </p:summaryRow>
+                            </p:dataTable>
+
+                            <div class="row" style="text-align: right;">                                         
+                                <div class="col s12" style="padding-right: 10px;" >     
+                                    <h:outputText value="#{invoicePrint.invoiceTotal}" style="color: black; font-size: 15px; " />
+                                </div>
+                            </div>
+
+                        </h:form>
+                    </p:dialog>   
+
+
+                    <p:dialog header="Invoice Preview" id="model_2" widgetVar="dlg2" modal="true" height="400" width="800" responsive="true">
+
+                        <h:form id="invoicePrint">
+                            <p:growl autoUpdate="true" />
+                            <h:dataTable id="printTable" styleClass="printTable" rowClasses = "right-text" var="in" value="#{invoicePrint.invoiceItemList}"  style="margin-bottom:20px">
+
+                                <h:column >
+                                    #{in.productName}
+                                </h:column>
+
+                                <h:column  >
+                                    #{in.qty}
+                                </h:column>
+
+                                <h:column  >
+                                    #{in.price}
+                                </h:column>
+
+                                <h:column >
+
+                                    #{in.tine_total}
+                                </h:column>
+
+                            </h:dataTable>
+
+                            <div class="row" style="text-align: right;">                                         
+                                <div class="col s12" style="padding-right: 110px;" >     
+                                    <h:outputText value="#{invoicePrint.invoiceTotal}" style="color: black; font-size: 15px; " />
+                                </div>
+                            </div>
+
+                        </h:form>
+                    </p:dialog>  
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </ui:define>
+
+</ui:composition>

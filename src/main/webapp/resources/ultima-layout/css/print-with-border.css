@@ -1,0 +1,45 @@
+@charset "UTF-8";
+
+/*!
+ * animate.css -http://daneden.me/animate
+ * Version - 3.5.1
+ * Licensed under the MIT license - http://opensource.org/licenses/MIT
+ *
+ * Copyright (c) 2016 Daniel Eden
+ */
+@media print {
+
+    @page
+    {
+        size: 8.5in 5.5in;
+        size: portrait;
+    }
+
+    .layout-compact .ui-datatable tbody tr.ui-widget-content td {
+        padding: 3px 10px !important;
+    }
+
+    .ui-datatable thead tr th {
+        border: 1px solid black !important;
+        font-size: 12px !important;
+
+    }
+    .ui-datatable tbody tr td {
+        border: 1px solid black !important;
+        /*background: none !important;*/
+        font-size: 12px !important;
+        padding: 3px 10px !important;
+    }
+
+    .ui-widget-content {
+        border: none !important;
+    }
+
+    .ui-panelgrid .ui-panelgrid-cell {
+        padding: 4px 6px !important;
+    }
+
+    .ui-panel .ui-panel-content {
+        padding: 8px 0px !important;
+    }
+}
